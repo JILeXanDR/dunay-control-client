@@ -1969,7 +1969,8 @@ webpackJsonp([0], {
     }
 
     Object.defineProperty(n, "__esModule", { value: !0 });
-    var en = e(57), tn = e(1), un = (e(0), e(33), e(56)), on = e(95), rn = e(72), sn = e(133), an = e(134), dn = e(135), cn = e(185), pn = e(17), gn = (e(273), function () {
+    var en = e(57), tn = e(1), un = (e(0), e(33), e(56)), on = e(95), rn = e(72), sn = e(133), an = e(134), dn = e(135),
+      cn = e(185), pn = e(17), gn = (e(273), function () {
         function l(l, n) {
           var e = this;
           this.sqlite = l, this.storage = n, this.stor = {}, this.$log = new pn.Subject, this.$update = new pn.Subject, this.onUpdate = this.$update.asObservable(), this.getPromise("settings").then(function (l) {
@@ -2034,7 +2035,8 @@ webpackJsonp([0], {
             })
           })
         }, l
-      }()), mn = e(387), vn = e(666), fn = e.n(vn), hn = e(366), _n = e.n(hn), bn = e(145), kn = (e(290), e(297), e(190)), Cn = e(146), yn = function () {
+      }()), mn = e(387), vn = e(666), fn = e.n(vn), hn = e(366), _n = e.n(hn), bn = e(145), kn = (e(290), e(297), e(190)),
+      Cn = e(146), yn = function () {
         function l(l, n, e, t, u, o, r, i) {
           var s = this;
           this.storage = l, this.vibration = n, this.localNotifications = e, this.nativeAudio = t, this.media = u, this.toastCtrl = o, this.alertCtrl = r, this.loadingCtrl = i, this.sounds = {}, this.soundSubject = new pn.Subject, this.alertsList = [], this.debounceSubject = new pn.Subject, this.debounceSubject.debounce(function () {
@@ -2108,7 +2110,10 @@ webpackJsonp([0], {
           var u = this;
           void 0 === n && (n = !0), void 0 === e && (e = 65), this.cancelLoading(), clearTimeout(this.timeout), clearInterval(this.interval);
           var o = 0;
-          this.loading = this.loadingCtrl.create({ content: l + "(" + o + ")", spinner: "ios" }), this.loading.present(), this.interval = setInterval(function () {
+          this.loading = this.loadingCtrl.create({
+            content: l + "(" + o + ")",
+            spinner: "ios"
+          }), this.loading.present(), this.interval = setInterval(function () {
             u.loading.setContent(l + "(" + ++o + ")")
           }, 1e3), this.timeout = setTimeout(function () {
             try {
@@ -2162,7 +2167,7 @@ webpackJsonp([0], {
           return this.serverVersion
         }, l.prototype.generateSecretKey = function () {
           for (var l = "", n = 0; n < 15; n++) l += String.fromCharCode(Math.floor(255 * Math.random()));
-          l = '123';
+          l = '1111111111111111';
           console.log('[JILEXANDR] generateSecretKey', l);
           return l
         }, l.prototype.aesEncrypt = function (l) {
@@ -2174,8 +2179,9 @@ webpackJsonp([0], {
             return _n.a.AES.decrypt(data, this.secret_key).toString(_n.a.enc.Utf8);
           };
           try {
-            const res = _n.a.AES.decrypt(l, this.secret_key).toString(_n.a.enc.Utf8);
-            console.log('[JILEXANDR] aesDecrypt', l, res);
+            const d = _n.a.AES.decrypt(l, this.secret_key);
+            const res = d.toString(_n.a.enc.Utf8);
+            console.log('[JILEXANDR] aesDecrypt', l, d, res);
             return res
           } catch (n) {
             return console.log("aesDecryptError: ", n), l
@@ -2191,7 +2197,8 @@ webpackJsonp([0], {
             try {
               n && t.server.domain ? (e.socket = new mn.$WebSocket("ws://" + t.server.domain + ":" + t.server.port), console.log("CONNECT DOMAIN")) : l && t.server.ip_reserve ? l && t.server && t.server.ip_reserve && t.server.port && (e.socket = new mn.$WebSocket("ws://" + t.server.ip_reserve + ":" + t.server.port), console.log("CONNECT RESERVEIP")) : (e.socket = new mn.$WebSocket("ws://" + t.server.ip + ":" + t.server.port), console.log("CONNECT IP")), e.socket.setSend4Mode(mn.WebSocketSendMode.Direct), e.socket.onOpen(function () {
                 e.secret_key = e.generateSecretKey();
-                const enkKey = e.encrypt.encrypt(e.secret_key);
+                let enkKey = e.encrypt.encrypt(e.secret_key);
+                enkKey = 'A/wZaMghKZM/69rpTj9y8cAPyFIqe3IjE9wuhcUYE/DCf9xeK1GFj+iYf3FIl2epkh1dKwJusVKlKE++1LSeXW3NmlTPPxBjZdZs0Kcnu5hB+z1TVGapcHmz7wtX5oCuT6MXmlWNRionhewKCpbUP595xCbJztseowEAUSSC/fs=';
                 console.log('[JILEXANDR] WS OPENED SEND=', enkKey);
                 e.socket.send(enkKey)
               }), e.socket.onMessage(function (l) {
@@ -2231,7 +2238,10 @@ webpackJsonp([0], {
           }, 20)
         }, l.prototype.updateToken = function (l) {
           var n = this;
-          1 == this.getReadyState() ? l ? this.send({ type: "push_token", token: l }) : this.close() : setTimeout(function () {
+          1 == this.getReadyState() ? l ? this.send({
+            type: "push_token",
+            token: l
+          }) : this.close() : setTimeout(function () {
             n.updateToken(l)
           }, 1e3)
         }, l.prototype.openConnection = function () {
@@ -2465,7 +2475,16 @@ webpackJsonp([0], {
             }, 1e3)), u.updateCRD(i)
           }, this.onEvents = function (l) {
             var n = !0, e = {}, t = JSON.parse(u.storage.get("settings")), o = u.currentCRDNumber;
-            e = { ppk_num: l.ppk_num, groups: {}, outputs: {}, plumes: {}, state: {}, radio: {}, adapters: {}, sensors: {} };
+            e = {
+              ppk_num: l.ppk_num,
+              groups: {},
+              outputs: {},
+              plumes: {},
+              state: {},
+              radio: {},
+              adapters: {},
+              sensors: {}
+            };
             var r, i;
             try {
               var s = t.ppks;
@@ -2777,18 +2796,38 @@ webpackJsonp([0], {
                   true: 7,
                   false: 8,
                   part: 26
-                }, 2: { true: 20, false: 21, part: 27 }, 3: { true: 22, false: 23, part: 28 }, 4: { true: 24, false: 25, part: 29 }
+                },
+                2: { true: 20, false: 21, part: 27 },
+                3: { true: 22, false: 23, part: 28 },
+                4: { true: 24, false: 25, part: 29 }
               },
-              outputs: { 0: { true: 16, false: 17 }, 1: { true: 10, false: 11 }, 2: { true: 12, false: 13 }, 3: { true: 14, false: 15 } },
+              outputs: {
+                0: { true: 16, false: 17 },
+                1: { true: 10, false: 11 },
+                2: { true: 12, false: 13 },
+                3: { true: 14, false: 15 }
+              },
               radios: { 1: { true: 30, false: 31 }, 2: { true: 32, false: 33 }, 3: { true: 34, false: 35 } },
               triggers: {}
             },
-            Dunay8l: { groups: { 1: { true: 7, false: 8 } }, outputs: { relay2: { true: 5, false: 6 }, uk2: { true: 1, false: 2 }, uk3: { true: 3, false: 4 } }, triggers: {} },
+            Dunay8l: {
+              groups: { 1: { true: 7, false: 8 } },
+              outputs: { relay2: { true: 5, false: 6 }, uk2: { true: 1, false: 2 }, uk3: { true: 3, false: 4 } },
+              triggers: {}
+            },
             DunaySTK: { outputs: { relay2: { true: 5, false: 6 } } }
-          }, this.sensorsDictionary = { conn: "link", power: "battery", door: "door" }, this.messages.outputMessage = function () {
+          }, this.sensorsDictionary = {
+            conn: "link",
+            power: "battery",
+            door: "door"
+          }, this.messages.outputMessage = function () {
             u.timeout && clearTimeout(u.timeout)
           };
-          for (var o = 1; o <= 16; o++) this.devices.Dunay4.triggers[o] = { true: [64, o + 15], false: [72, o + 15], part: [240, o] };
+          for (var o = 1; o <= 16; o++) this.devices.Dunay4.triggers[o] = {
+            true: [64, o + 15],
+            false: [72, o + 15],
+            part: [240, o]
+          };
           for (o = 1; o <= 8; o++) this.devices.Dunay8l.triggers[o] = { true: [64, o + 15], false: [72, o + 15] };
           this.alerts.onUpdate(function () {
             u.updateStatus(u.status)
@@ -2857,7 +2896,16 @@ webpackJsonp([0], {
             console.log("onstate");
             var e = JSON.parse(this.storage.get("settings"));
             l.forEach(function (l) {
-              if (n.status[l.ppk_num] = { outputs: {}, groups: {}, plumes: {}, state: {}, radio: {}, online: !1, adapters: {}, sensors: {} }, l.scenario) {
+              if (n.status[l.ppk_num] = {
+                outputs: {},
+                groups: {},
+                plumes: {},
+                state: {},
+                radio: {},
+                online: !1,
+                adapters: {},
+                sensors: {}
+              }, l.scenario) {
                 e.ppks.find(function (n) {
                   return n.ppk_num == l.ppk_num
                 }).scenarios = l.scenario
@@ -2867,7 +2915,10 @@ webpackJsonp([0], {
                 for (var t in l.groups) n.status[l.ppk_num].groups[t] = 2 == l.groups[t] ? 2 : 1 == l.groups[t];
                 for (var t in l.c) n.status[l.ppk_num].outputs[t] = 1 == l.c[t];
                 for (var t in l.radio) n.status[l.ppk_num].radio[t] = 1 == l.radio[t];
-                Object.keys(l.groups).length || n.alerts.createAlert("Внимание!", "Статусы прибора недоступны. Необходим рестарт прибора по питанию!", [{ text: "OK", role: "cancel" }]);
+                Object.keys(l.groups).length || n.alerts.createAlert("Внимание!", "Статусы прибора недоступны. Необходим рестарт прибора по питанию!", [{
+                  text: "OK",
+                  role: "cancel"
+                }]);
                 var u = {};
                 for (var o in l.adapters) {
                   u[o] = {};
@@ -3046,12 +3097,20 @@ webpackJsonp([0], {
             this.ppks = JSON.parse(e).ppks.filter(function (l) {
               if (l.ppk_num) return l
             }), this.ppks.length > 1 && (this.showPpkChanger = !0), this.ppks.forEach(function (l) {
-              n.backColor[l.ppk_num] = l.group_color, n.ppkChangerColor[l.ppk_num] = { stroke: 0, fill: l.group_color }, n.ppkChangerPartColor[l.ppk_num] = {
+              n.backColor[l.ppk_num] = l.group_color, n.ppkChangerColor[l.ppk_num] = {
+                stroke: 0,
+                fill: l.group_color
+              }, n.ppkChangerPartColor[l.ppk_num] = {
                 stroke: 0,
                 fill: n.hexToRgb(l.group_color)
               }, l && l.ppk_num == n.crd.CRDNumber && (n.groupName = l.group_name, n.color = l.group_color, n.shieldLockClosed = { fill: l.group_color }, n.strokeColor = { stroke: n.color })
             }), l = this.storage.get("settings"), this.groups = {}, JSON.parse(l).ppks.forEach(function (l) {
-              l.group_name && (n.groups[l.ppk_num] = { name: l.group_name, groups: l.groups, ppk_num: l.ppk_num, type: l.crd_type })
+              l.group_name && (n.groups[l.ppk_num] = {
+                name: l.group_name,
+                groups: l.groups,
+                ppk_num: l.ppk_num,
+                type: l.crd_type
+              })
             });
             try {
               JSON.parse(this.storage.get("settings")).ppks.forEach(function (l) {
@@ -3065,7 +3124,8 @@ webpackJsonp([0], {
           l = l.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, function (l, n, e, t) {
             return n + n + e + e + t + t
           });
-          var n = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(l), e = n ? { r: parseInt(n[1], 16), g: parseInt(n[2], 16), b: parseInt(n[3], 16) } : null;
+          var n = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(l),
+            e = n ? { r: parseInt(n[1], 16), g: parseInt(n[2], 16), b: parseInt(n[3], 16) } : null;
           return "rgba(" + e.r + "," + e.g + "," + e.b + ",0.1)"
         }, l.prototype.setGroup = function (l, n) {
           this.response(), this.groupNumber = +n, this.device = l.ppk_num, this.crd.changeCRDNumber(l.ppk_num), this.groupList = !1, this.messages.showAlert = !this.groupList
@@ -3085,10 +3145,16 @@ webpackJsonp([0], {
           var a = this;
           this.fb = l, this.deviceFeedback = n, this.navCtrl = e, this.server = t, this.storage = u, this.alerts = o, this.crd = r, this.alertCtrl = i, this.messages = s, this.outputs = {}, this.radios = {}, this.scenInputs = ["trigger", "delay", "action"], this.scenarios = {
             trigger: [],
-            delay: [{ value: "1000", name: "1c" }, { value: "5000", name: "5c" }, { value: "10000", name: "10c" }, { value: "30000", name: "30c" }, { value: "60000", name: "1м" }, {
+            delay: [{ value: "1000", name: "1c" }, { value: "5000", name: "5c" }, {
+              value: "10000",
+              name: "10c"
+            }, { value: "30000", name: "30c" }, { value: "60000", name: "1м" }, {
               value: "300000",
               name: "5м"
-            }, { value: "600000", name: "10м" }, { value: "1200000", name: "20м" }, { value: "1800000", name: "30м" }, { value: "3600000", name: "1ч" }],
+            }, { value: "600000", name: "10м" }, { value: "1200000", name: "20м" }, {
+              value: "1800000",
+              name: "30м"
+            }, { value: "3600000", name: "1ч" }],
             action: []
           }, this.tab = "outputs", this.grid = !1, this.items = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], this.send = function (l, n, e) {
             a.response(), a.crd.execute(l, n, e, a.crd.CRDNumber, a.crd.crd[l][n].pulse)
@@ -3249,7 +3315,10 @@ webpackJsonp([0], {
                 return [l, t[l]]
               }).forEach(function (l) {
                 var t = l[0], u = l[1], o = JSON.stringify({ type: "ppk_msg", data: u });
-                n.scenarios.trigger.push({ value: o, name: ("part" == t ? "Ч. взятие" : "true" == t ? "Взятие" : "Снятие") + " группы " + e })
+                n.scenarios.trigger.push({
+                  value: o,
+                  name: ("part" == t ? "Ч. взятие" : "true" == t ? "Взятие" : "Снятие") + " группы " + e
+                })
               })
             })
           } catch (l) {
@@ -3264,7 +3333,10 @@ webpackJsonp([0], {
                 return [l, t[l]]
               }).forEach(function (l) {
                 var t = l[0], u = l[1], o = JSON.stringify({ type: "ppk_command", cmd: u });
-                n.scenarios.action.push({ value: o, name: ("part" == t ? "Ч. взять" : "true" == t ? "Взять" : "Снять") + " группу " + e })
+                n.scenarios.action.push({
+                  value: o,
+                  name: ("part" == t ? "Ч. взять" : "true" == t ? "Взять" : "Снять") + " группу " + e
+                })
               })
             })
           } catch (l) {
@@ -3279,8 +3351,14 @@ webpackJsonp([0], {
                 return [l, t[l]]
               }).forEach(function (l) {
                 var t = l[0], u = l[1], o = JSON.stringify({ type: "ppk_msg", data: [61, u] }),
-                  r = { value: JSON.stringify({ type: "ppk_command", cmd: u }), name: ("true" == t ? "Вкл." : "Выкл.") + " выход " + e };
-                n.scenarios.trigger.push({ value: o, name: ("true" == t ? "Вкл." : "Выкл.") + " выход " + e }), n.scenarios.action.push(r)
+                  r = {
+                    value: JSON.stringify({ type: "ppk_command", cmd: u }),
+                    name: ("true" == t ? "Вкл." : "Выкл.") + " выход " + e
+                  };
+                n.scenarios.trigger.push({
+                  value: o,
+                  name: ("true" == t ? "Вкл." : "Выкл.") + " выход " + e
+                }), n.scenarios.action.push(r)
               })
             })
           } catch (l) {
@@ -3295,8 +3373,14 @@ webpackJsonp([0], {
                 return [l, t[l]]
               }).forEach(function (l) {
                 var t = l[0], u = l[1], o = JSON.stringify({ type: "ppk_msg", data: [61, u] }),
-                  r = { value: JSON.stringify({ type: "ppk_command", cmd: u }), name: ("true" == t ? "Вкл." : "Выкл.") + " RF розетки " + e };
-                n.scenarios.trigger.push({ value: o, name: ("true" == t ? "Вкл." : "Выкл.") + " RF розетки " + e }), n.scenarios.action.push(r)
+                  r = {
+                    value: JSON.stringify({ type: "ppk_command", cmd: u }),
+                    name: ("true" == t ? "Вкл." : "Выкл.") + " RF розетки " + e
+                  };
+                n.scenarios.trigger.push({
+                  value: o,
+                  name: ("true" == t ? "Вкл." : "Выкл.") + " RF розетки " + e
+                }), n.scenarios.action.push(r)
               })
             })
           } catch (l) {
@@ -3310,7 +3394,10 @@ webpackJsonp([0], {
             var s = {};
             "Dunay4" == u && (r = 16);
             for (var a = 1; a <= r; a++) {
-              s[a] = [{ name: "Норма шлейфа " + a, trigger: [88, a + 15] }, { name: "КЗ шлейфа " + a, trigger: [112, a + 15] }, {
+              s[a] = [{ name: "Норма шлейфа " + a, trigger: [88, a + 15] }, {
+                name: "КЗ шлейфа " + a,
+                trigger: [112, a + 15]
+              }, {
                 name: "Обрыв шлейфа " + a,
                 trigger: [80, a + 15]
               }, { name: "Неисправность шлейфа " + a, trigger: [120, a + 15] }]
@@ -3407,7 +3494,16 @@ webpackJsonp([0], {
           return new Promise(function (t, u) {
             var o = e.alertCtrl.create();
             o.setTitle("Тригер"), e.response();
-            var r = { groupsOff: "нятие", groupsOn: "зятие", outputs: "выход", roz: "RF", kz: "КЗ", break: "Обрыв", norm: "Норма", fail: "Неисправность" };
+            var r = {
+              groupsOff: "нятие",
+              groupsOn: "зятие",
+              outputs: "выход",
+              roz: "RF",
+              kz: "КЗ",
+              break: "Обрыв",
+              norm: "Норма",
+              fail: "Неисправность"
+            };
             e.scenarios.trigger.filter(function (n) {
               return n.name.includes(r[l])
             }).forEach(function (l) {
@@ -3431,7 +3527,10 @@ webpackJsonp([0], {
               label: "Управление выходами",
               value: "outputs"
             }, { label: "Управление розетками", value: "roz" }];
-            "Тип тригера" == l && (r = r.concat([{ label: "Кз шлейфа", value: "kz" }, { label: "Обрыв шлейфа", value: "break" }, {
+            "Тип тригера" == l && (r = r.concat([{ label: "Кз шлейфа", value: "kz" }, {
+              label: "Обрыв шлейфа",
+              value: "break"
+            }, {
               label: "Норма шлейфа",
               value: "norm"
             }, { label: "Неисправность шлейфа", value: "fail" }])), r.forEach(function (l) {
@@ -3534,14 +3633,22 @@ webpackJsonp([0], {
           this.date = !this.date, this.response()
         }, l.prototype.pickDateFrom = function () {
           var l = this;
-          this.datePicker.show({ date: new Date, mode: "date", androidTheme: this.datePicker.ANDROID_THEMES.THEME_HOLO_LIGHT }).then(function (n) {
+          this.datePicker.show({
+            date: new Date,
+            mode: "date",
+            androidTheme: this.datePicker.ANDROID_THEMES.THEME_HOLO_LIGHT
+          }).then(function (n) {
             l.periodFrom = n.getTime(), l.dateChange()
           }, function (l) {
             return console.log("Error occurred while getting date: ", l)
           })
         }, l.prototype.pickDateTo = function () {
           var l = this;
-          this.datePicker.show({ date: new Date, mode: "date", androidTheme: this.datePicker.ANDROID_THEMES.THEME_HOLO_LIGHT }).then(function (n) {
+          this.datePicker.show({
+            date: new Date,
+            mode: "date",
+            androidTheme: this.datePicker.ANDROID_THEMES.THEME_HOLO_LIGHT
+          }).then(function (n) {
             l.periodTo = n.getTime(), l.dateChange()
           }, function (l) {
             return console.log("Error occurred while getting date: ", l)
@@ -3680,7 +3787,10 @@ webpackJsonp([0], {
             delete t.user.user_name;
             var u = l.b64EncodeUnicode(JSON.stringify(t)), o = _n.a.AES.encrypt(u, e).toString();
             l.alerts.createLoading("Экспорт настроек... "), l.server.sendDataToServer({ userData: o }).then(function (n) {
-              l.alerts.cancelLoading(), l.QRCode = JSON.stringify({ data: n.data, pass: e }), l.QRData = n.data, l.qrCodeModal = !0
+              l.alerts.cancelLoading(), l.QRCode = JSON.stringify({
+                data: n.data,
+                pass: e
+              }), l.QRData = n.data, l.qrCodeModal = !0
             })
           }).catch()
         }, l.prototype.closeQRModal = function () {
@@ -3698,7 +3808,11 @@ webpackJsonp([0], {
           return new Promise(function (n, e) {
             l.alertCtrl.create({
               title: "Импорт настроек",
-              inputs: [{ type: "radio", label: "Ввести код", value: "input" }, { type: "radio", label: "Прочитать QR", value: "QR" }],
+              inputs: [{ type: "radio", label: "Ввести код", value: "input" }, {
+                type: "radio",
+                label: "Прочитать QR",
+                value: "QR"
+              }],
               buttons: [{
                 text: "Отменить", handler: function (l) {
                   return e()
@@ -3764,7 +3878,10 @@ webpackJsonp([0], {
             console.log(JSON.stringify(l));
             var e = n.settings.user.user_name || "Пользователь " + Math.round(50 * Math.random());
             n.settings = JSON.parse(l), n.settings.user.user_name = e, n.storage.set("settings", JSON.stringify(n.settings)).then(function () {
-              n.newSettings = !0, n.init(), n.alerts.createAlert("Настройки импортированы", "Перейдите на другю вкладку для начала работы с новыми настройками", [{ text: "Ок", role: "cancel" }])
+              n.newSettings = !0, n.init(), n.alerts.createAlert("Настройки импортированы", "Перейдите на другю вкладку для начала работы с новыми настройками", [{
+                text: "Ок",
+                role: "cancel"
+              }])
             })
           }).catch(function (l) {
             return console.log(l)
@@ -3785,7 +3902,8 @@ webpackJsonp([0], {
           l = l.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, function (l, n, e, t) {
             return n + n + e + e + t + t
           });
-          var n = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(l), e = n ? { r: parseInt(n[1], 16), g: parseInt(n[2], 16), b: parseInt(n[3], 16) } : null;
+          var n = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(l),
+            e = n ? { r: parseInt(n[1], 16), g: parseInt(n[2], 16), b: parseInt(n[3], 16) } : null;
           return "rgba(" + e.r + "," + e.g + "," + e.b + ",0.05)"
         }, l.prototype.convertForGrid = function (l, n, e, t) {
           l.length != n * e && console.log("wrong massive length"), this.gridElements = t;
@@ -3860,20 +3978,32 @@ webpackJsonp([0], {
         }, l.prototype.ppkColor = function (l, n) {
           var e = this, t = { stroke: "#000000", fill: "#ffffff" };
           return this.settings.ppks.forEach(function (u) {
-            u.ppk_num && e.settings.ppks.indexOf(u) == l && (t = n ? { "border-color": u.group_color } : { stroke: "#000000", fill: u.group_color })
+            u.ppk_num && e.settings.ppks.indexOf(u) == l && (t = n ? { "border-color": u.group_color } : {
+              stroke: "#000000",
+              fill: u.group_color
+            })
           }), t
         }, l.prototype.changed = function (l) {
           switch (l) {
             case"pulse":
-              this.alerts.createAlert("Внимание!", "Настройки импульсного режима для выхода должны быть одинаковыми на всех устройствах, привязанных к данному прибору", [{ text: "OK", role: "cancel" }])
+              this.alerts.createAlert("Внимание!", "Настройки импульсного режима для выхода должны быть одинаковыми на всех устройствах, привязанных к данному прибору", [{
+                text: "OK",
+                role: "cancel"
+              }])
           }
         }, l.prototype.showHint = function (l) {
           switch (this.response(), l) {
             case"userName":
-              this.alerts.createAlert("Логин", "Для идентификации пользователя <br> в системе необходимо обязательно заполнить данное поле!", [{ text: "Ok", role: "cancel" }]);
+              this.alerts.createAlert("Логин", "Для идентификации пользователя <br> в системе необходимо обязательно заполнить данное поле!", [{
+                text: "Ok",
+                role: "cancel"
+              }]);
               break;
             case"userPwd":
-              this.alerts.createAlert("Пароль", "Устанавливается для ограничения доступа к закладке «Настройки» <br> (не обязательно)", [{ text: "Ok", role: "cancel" }]);
+              this.alerts.createAlert("Пароль", "Устанавливается для ограничения доступа к закладке «Настройки» <br> (не обязательно)", [{
+                text: "Ok",
+                role: "cancel"
+              }]);
               break;
             case"serverIP":
               this.alerts.createAlert("IP адрес", " IP адрес Пульта централизованного наблюдения (ПЦН). Узнавать <br> у компании, которая предоставляет охранные услуги.", [{
@@ -3918,10 +4048,16 @@ webpackJsonp([0], {
               }]);
               break;
             case"pulseMode":
-              this.alerts.createAlert("Импульсный режим", "Необходим для кратковременного изменения состояния выхода ППК", [{ text: "Ok", role: "cancel" }]);
+              this.alerts.createAlert("Импульсный режим", "Необходим для кратковременного изменения состояния выхода ППК", [{
+                text: "Ok",
+                role: "cancel"
+              }]);
               break;
             case"always_on":
-              this.alerts.createAlert("Необходим перезапуск", "Необходимо перейти на другую вкладку, а после перезапустить ПО для применения данного режима", [{ text: "Ok", role: "cancel" }])
+              this.alerts.createAlert("Необходим перезапуск", "Необходимо перейти на другую вкладку, а после перезапустить ПО для применения данного режима", [{
+                text: "Ok",
+                role: "cancel"
+              }])
           }
         }, l.prototype.openSettings = function (l) {
           var n = this;
@@ -3947,7 +4083,14 @@ webpackJsonp([0], {
               crd_color: e[this.currentPpkNumber].group_color || "#b71c1c"
             })
           } catch (l) {
-            this.crdForm.reset({ license_key: "", ppk_num: "", pwd: "", crd_name: "", crd_type: "", crd_color: "#b71c1c" })
+            this.crdForm.reset({
+              license_key: "",
+              ppk_num: "",
+              pwd: "",
+              crd_name: "",
+              crd_type: "",
+              crd_color: "#b71c1c"
+            })
           }
           this.groupColor = { "background-color": "" + this.hexToRgb(e[this.currentPpkNumber].group_color) }, this.crdForm.controls.crd_type.value && this.onCrdTypeChange(this.crdForm.controls.crd_type.value), this.check = !1
         }, l.prototype.submitUserSettings = function () {
@@ -3963,7 +4106,12 @@ webpackJsonp([0], {
             }), this.settings.server.ip_reserve = n.join(".")), this.serverForm.controls.port.value.indexOf("■") < 0 && (this.settings.server.port = +this.serverForm.controls.port.value), this.settings.server.domain = this.serverForm.controls.domain.value ? this.serverForm.controls.domain.value : void 0, this.storage.set("settings", JSON.stringify(this.settings))
           }
           var e = this.settings.server;
-          this.didChanged && this.serverForm.reset({ domain: e.domain ? e.domain : "", ip: e.ip ? "■■■.■■■.■■■.■■■" : "", ip_reserve: e.ip_reserve ? "■■■.■■■.■■■.■■■" : "", port: e.port ? "■■■■" : "" })
+          this.didChanged && this.serverForm.reset({
+            domain: e.domain ? e.domain : "",
+            ip: e.ip ? "■■■.■■■.■■■.■■■" : "",
+            ip_reserve: e.ip_reserve ? "■■■.■■■.■■■.■■■" : "",
+            port: e.port ? "■■■■" : ""
+          })
         }, l.prototype.submitPpkSettings = function () {
           var l = this, n = {}, e = {}, t = {}, u = {}, o = {}, r = this.settings.ppks[this.currentPpkNumber].scenarios;
           Object.keys(this.crdOutputsForm.value).forEach(function (e) {
@@ -4051,7 +4199,14 @@ webpackJsonp([0], {
                   crd_color: u[n.currentPpkNumber].group_color || "#b71c1c"
                 })
               } catch (l) {
-                n.crdForm.reset({ license_key: "", ppk_num: "", pwd: "", crd_name: "", crd_type: "", crd_color: "#b71c1c" })
+                n.crdForm.reset({
+                  license_key: "",
+                  ppk_num: "",
+                  pwd: "",
+                  crd_name: "",
+                  crd_type: "",
+                  crd_color: "#b71c1c"
+                })
               }
               n.settings.ppks.forEach(function (l) {
                 l.ppk_num && (t = l.ppk_num)
@@ -4091,7 +4246,11 @@ webpackJsonp([0], {
           n.setTitle("Номер шлейфа"), this.response();
           var e;
           "Dunay4" == this.crdForm.controls.crd_type.value ? e = 16 : "Dunay8l" == this.crdForm.controls.crd_type.value ? e = 8 : "DunaySTK" == this.crdForm.controls.crd_type.value && (e = 1);
-          for (var t = 1; t <= e; t++) void 0 === this.crdPlumesForm.value[t] && n.addInput({ type: "radio", label: t.toString(), value: t.toString() });
+          for (var t = 1; t <= e; t++) void 0 === this.crdPlumesForm.value[t] && n.addInput({
+            type: "radio",
+            label: t.toString(),
+            value: t.toString()
+          });
           n.addButton("Отмена"), n.addButton({
             text: "Ok", handler: function (n) {
               n && l.addPlume(n)
@@ -4100,7 +4259,11 @@ webpackJsonp([0], {
         }, l.prototype.newUser = function () {
           var l = this, n = this.alertCtrl.create();
           n.setTitle("Номер пользователя"), this.response();
-          for (var e = 1; e <= 24; e++) void 0 === this.crdUsersForm.value[e] && n.addInput({ type: "radio", label: e.toString(), value: e.toString() });
+          for (var e = 1; e <= 24; e++) void 0 === this.crdUsersForm.value[e] && n.addInput({
+            type: "radio",
+            label: e.toString(),
+            value: e.toString()
+          });
           n.addButton("Отмена"), n.addButton({
             text: "Ok", handler: function (n) {
               n && l.addUserToUsers(n)
@@ -4397,7 +4560,13 @@ webpackJsonp([0], {
         }, l.prototype.openState = function () {
           if (this.showStatus) if (this.crd.online) {
             this.response();
-            this.modalCtrl.create(Pn, { settings: this.storage.get("settings"), crd: this.crd, alerts: this.alerts, server: this.server, network: this.network }).present()
+            this.modalCtrl.create(Pn, {
+              settings: this.storage.get("settings"),
+              crd: this.crd,
+              alerts: this.alerts,
+              server: this.server,
+              network: this.network
+            }).present()
           } else this.alerts.createAlertsList("error", "Нет связи с ППК", (new Date).getTime())
         }, l.prototype.tabSelected = function (l) {
           this.response(), this.showStatus = 3 == l.index
@@ -4420,7 +4589,15 @@ webpackJsonp([0], {
             }]), t.set("settings", JSON.stringify({
               ppks: [{}, {}, {}, {}, {}],
               server: { ping_interval: 45 },
-              user: { always_on: !1, server_vibration: !0, server_sound: !0, connect_sound: !1, send_vibration: !1, long_signal: !1, app_version: 2.2 }
+              user: {
+                always_on: !1,
+                server_vibration: !0,
+                server_sound: !0,
+                connect_sound: !1,
+                send_vibration: !1,
+                long_signal: !1,
+                app_version: 2.2
+              }
             }))));
             var o = JSON.parse(t.get("settings"));
             l.ready().then(function () {
@@ -4442,7 +4619,12 @@ webpackJsonp([0], {
                   console.error(l)
                 }
                 try {
-                  cordova.plugins.backgroundMode.setDefaults({ title: "Dunay Control", text: "Приложение запущено", silent: !1, resume: !0 })
+                  cordova.plugins.backgroundMode.setDefaults({
+                    title: "Dunay Control",
+                    text: "Приложение запущено",
+                    silent: !1,
+                    resume: !0
+                  })
                 } catch (l) {
                   console.error(l)
                 }
@@ -4508,29 +4690,40 @@ webpackJsonp([0], {
       }(), Un = e(152), jn = function () {
         return function () {
         }
-      }(), Hn = e(81), zn = e(709), Kn = e(710), Jn = e(711), Bn = e(712), Zn = e(713), Wn = e(714), Qn = e(715), Yn = e(716), Xn = e(717), le = e(718), ne = e(48), ee = e(88), te = e(7), ue = e(22),
-      oe = e(8), re = e(3), ie = e(5), se = e(10), ae = e(41), de = e(20), ce = e(9), pe = e(186), ge = e(131), me = e(60), ve = e(121), fe = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      }(), Hn = e(81), zn = e(709), Kn = e(710), Jn = e(711), Bn = e(712), Zn = e(713), Wn = e(714), Qn = e(715),
+      Yn = e(716), Xn = e(717), le = e(718), ne = e(48), ee = e(88), te = e(7), ue = e(22),
+      oe = e(8), re = e(3), ie = e(5), se = e(10), ae = e(41), de = e(20), ce = e(9), pe = e(186), ge = e(131),
+      me = e(60), ve = e(121), fe = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
       he = tn["ɵccf"]("ng-component", Gn, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 6, "ng-component", [], null, null, null, t, fe)), tn["ɵprd"](512, null, gn, gn, [dn.a, pe.a]), tn["ɵprd"](512, null, yn, yn, [gn, bn.a, on.a, un.a, Cn.a, ge.a, me.a, ve.a]), tn["ɵprd"](512, null, Nn, Nn, [gn, yn, Rn.a]), tn["ɵprd"](512, null, Sn, Sn, [Nn, gn, yn, un.a]), tn["ɵprd"](512, null, xn, xn, [Nn, Sn, gn, yn]), tn["ɵdid"](6, 49152, null, 0, Gn, [ie.a, rn.a, on.a, gn, Sn, yn, Nn, sn.a, $n.a, an.a, un.a, xn], null, null)], null, null)
-      }, {}, {}, []), _e = e(15), be = e(37), ke = e(94), Ce = e(65), ye = e(25), Re = e(32), Ne = e(719), we = e(69), Se = e(720), xe = e(127), De = e(132), Ee = e(374), Ae = e(49), Ie = e(205),
-      Oe = e(71), Fe = e(42), Te = e(89), Ve = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }), Le = tn["ɵccf"]("page-tabs", qn, function (l) {
+      }, {}, {}, []), _e = e(15), be = e(37), ke = e(94), Ce = e(65), ye = e(25), Re = e(32), Ne = e(719), we = e(69),
+      Se = e(720), xe = e(127), De = e(132), Ee = e(374), Ae = e(49), Ie = e(205),
+      Oe = e(71), Fe = e(42), Te = e(89), Ve = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      Le = tn["ɵccf"]("page-tabs", qn, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-tabs", [], null, null, null, a, Ve)), tn["ɵdid"](1, 49152, null, 0, qn, [Dn.a, ue.a, Te.a, Nn, gn, yn, un.a, rn.a, xn], null, null)], null, null)
-      }, {}, {}, []), Me = e(103), Pe = e(23), qe = e(21), $e = e(47), Ge = e(61), Ue = e(46), je = e(206), He = e(70), ze = e(38), Ke = e(112),
+      }, {}, {}, []), Me = e(103), Pe = e(23), qe = e(21), $e = e(47), Ge = e(61), Ue = e(46), je = e(206), He = e(70),
+      ze = e(38), Ke = e(112),
       Je = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }), Be = tn["ɵccf"]("page-home", En, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-home", [], null, null, null, j, Je)), tn["ɵdid"](1, 49152, null, 0, En, [Dn.a, me.a, Sn, ue.a, Nn, gn, yn, xn, Ke.a], null, null)], null, null)
-      }, {}, {}, []), Ze = e(116), We = e(118), Qe = e(117), Ye = e(173), Xe = e(721), lt = e(92), nt = e(375), et = e(86), tt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      }, {}, {}, []), Ze = e(116), We = e(118), Qe = e(117), Ye = e(173), Xe = e(721), lt = e(92), nt = e(375),
+      et = e(86), tt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
       ut = tn["ɵccf"]("page-outputs", In, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-outputs", [], null, null, null, gl, tt)), tn["ɵdid"](1, 49152, null, 0, In, [An.FormBuilder, Dn.a, ue.a, Nn, gn, yn, xn, me.a, Sn], null, null)], null, null)
-      }, {}, {}, []), ot = e(376), rt = e(93), it = e(90), st = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }), at = tn["ɵccf"]("page-event-log", Fn, function (l) {
+      }, {}, {}, []), ot = e(376), rt = e(93), it = e(90), st = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      at = tn["ɵccf"]("page-event-log", Fn, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-event-log", [], null, null, null, hl, st)), tn["ɵdid"](1, 49152, null, 0, Fn, [yn, Dn.a, ue.a, gn, xn, On.a], null, null)], null, null)
-      }, {}, {}, []), dt = e(722), ct = e(87), pt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }), gt = tn["ɵccf"]("page-settings", Mn, function (l) {
+      }, {}, {}, []), dt = e(722), ct = e(87), pt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      gt = tn["ɵccf"]("page-settings", Mn, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-settings", [], null, null, null, Jl, pt)), tn["ɵdid"](1, 49152, null, 0, Mn, [Dn.a, me.a, gn, Nn, yn, Tn.a, xn, An.FormBuilder, Vn.a, Te.a], null, null)], null, null)
-      }, {}, {}, []), mt = e(19), vt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }), ft = tn["ɵccf"]("page-crd-state", Pn, function (l) {
+      }, {}, {}, []), mt = e(19), vt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      ft = tn["ɵccf"]("page-crd-state", Pn, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-crd-state", [], null, null, null, ln, vt)), tn["ɵdid"](1, 49152, null, 0, Pn, [Dn.a, te.a, mt.a], null, null)], null, null)
-      }, {}, {}, []), ht = e(723), _t = e(176), bt = e(43), kt = e(30), Ct = e(724), yt = e(67), Rt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
+      }, {}, {}, []), ht = e(723), _t = e(176), bt = e(43), kt = e(30), Ct = e(724), yt = e(67),
+      Rt = tn["ɵcrt"]({ encapsulation: 2, styles: [], data: {} }),
       Nt = tn["ɵccf"]("page-scanner", Ln, function (l) {
         return tn["ɵvid"](0, [(l()(), tn["ɵeld"](0, 0, null, null, 1, "page-scanner", [], null, null, null, nn, Rt)), tn["ɵdid"](1, 49152, null, 0, Ln, [te.a, mt.a, ue.a, Vn.a], null, null)], null, null)
-      }, {}, {}, []), wt = e(184), St = e(181), xt = e(268), Dt = e(83), Et = e(68), At = e(114), It = e(171), Ot = e(180), Ft = e(267), Tt = e(182), Vt = e(53), Lt = e(167), Mt = e(183),
+      }, {}, {}, []), wt = e(184), St = e(181), xt = e(268), Dt = e(83), Et = e(68), At = e(114), It = e(171),
+      Ot = e(180), Ft = e(267), Tt = e(182), Vt = e(53), Lt = e(167), Mt = e(183),
       Pt = tn["ɵcmf"](jn, [Hn.b], function (l) {
         return tn["ɵmod"]([tn["ɵmpd"](512, tn.ComponentFactoryResolver, tn["ɵCodegenComponentFactoryResolver"], [[8, [zn.a, Kn.a, Jn.a, Bn.a, Zn.a, Wn.a, Qn.a, Yn.a, Xn.a, he, Le, Be, ut, at, gt, ft, Nt]], [3, tn.ComponentFactoryResolver], tn.NgModuleRef]), tn["ɵmpd"](5120, tn.LOCALE_ID, tn["ɵq"], [[3, tn.LOCALE_ID]]), tn["ɵmpd"](4608, _e.l, _e.k, [tn.LOCALE_ID, [2, _e.t]]), tn["ɵmpd"](4608, An["ɵi"], An["ɵi"], []), tn["ɵmpd"](4608, An.FormBuilder, An.FormBuilder, []), tn["ɵmpd"](5120, tn.APP_ID, tn["ɵi"], []), tn["ɵmpd"](5120, tn.IterableDiffers, tn["ɵn"], []), tn["ɵmpd"](5120, tn.KeyValueDiffers, tn["ɵo"], []), tn["ɵmpd"](4608, en.c, en.q, [_e.c]), tn["ɵmpd"](6144, tn.Sanitizer, null, [en.c]), tn["ɵmpd"](4608, en.f, wt.a, []), tn["ɵmpd"](5120, en.d, function (l, n, e, t, u) {
           return [new en.k(l, n), new en.o(e), new en.n(t, u)]

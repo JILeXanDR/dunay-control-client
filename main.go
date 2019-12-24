@@ -2,101 +2,120 @@ package main
 
 import (
 	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
-	"encoding/hex"
+	"encoding/json"
 	"github.com/gorilla/websocket"
-	"io"
 	"log"
 )
 
-var secretKey = []byte("6368616e676520746869732070617373776f726420746f206120736563726574")
+//var AESKey = genKey(16)
+//var AESKey = []byte{49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49} // "1111111111111111"
+var AESKey = bytes.NewBufferString("1111111111111111").Bytes()
+var salt = []byte("Salted__")
+var encService = NewEncryptionService("key.pub", salt, AESKey)
 
 func main() {
-	c, _, err := websocket.DefaultDialer.Dial("ws://78.137.4.125:19001", nil)
-
-	// TODO: send encrypted secret key
+	connection, _, err := websocket.DefaultDialer.Dial("ws://78.137.4.125:19001", nil)
 
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
-	defer c.Close()
+	defer connection.Close()
 
-	if err := c.WriteMessage(websocket.TextMessage, bytes.NewBufferString(Encrypt(string(secretKey))).Bytes()); err != nil {
+	log.Printf("AESKey=%v", AESKey)
+	log.Printf("AESKey=%s", AESKey)
+
+	firstSend, err := encService.EncodeRSA(AESKey)
+	if err != nil {
+		log.Fatal("can't encode as RSA:", err)
+	}
+
+	firstSend = bytes.NewBufferString("A/wZaMghKZM/69rpTj9y8cAPyFIqe3IjE9wuhcUYE/DCf9xeK1GFj+iYf3FIl2epkh1dKwJusVKlKE++1LSeXW3NmlTPPxBjZdZs0Kcnu5hB+z1TVGapcHmz7wtX5oCuT6MXmlWNRionhewKCpbUP595xCbJztseowEAUSSC/fs=").Bytes()
+	log.Printf("[WS] send message %v", string(firstSend))
+
+	if err := connection.WriteMessage(websocket.TextMessage, firstSend); err != nil {
 		panic("WriteMessage error -> " + err.Error())
 	}
 
-	for {
-		println("ReadMessage")
-		_, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			return
+	messages := make(chan []byte)
+
+	go func() {
+		for {
+			println("ReadMessage")
+			_, message, err := connection.ReadMessage()
+			if err != nil {
+				log.Println("read:", err)
+				return
+			}
+
+			log.Printf("[WS] plain message: %s", message)
+
+			println("send to channel")
+			messages <- message
+			println("end for...")
 		}
+	}()
 
-		log.Printf("response: %s", message)
+	for {
+		select {
+		case message := <-messages:
+			go func(message []byte) {
 
-		Decrypt(string(message))
+				defer func() {
+					log.Print("Done==================================\n\n\n")
+				}()
+
+				println("channel message", string(message))
+
+				var jsonData map[string]interface{}
+				if err := json.Unmarshal(message, &jsonData); err == nil {
+					log.Printf("decoded JSON response: %+v", jsonData)
+					return
+				}
+
+				decoded, err := encService.DecodeAES(message)
+				if err != nil {
+					log.Printf("err: %v", err)
+					return
+				}
+
+				if err := json.Unmarshal(decoded, &jsonData); err != nil {
+					log.Printf("err: %v", err)
+					return
+				}
+
+				log.Printf("json data: %+v", jsonData)
+
+				messageType := jsonData["type"].(string)
+
+				if messageType == "key_accepted" {
+
+					data := []byte(`{"type":"login","user_name":"a.shtovba","ping_interval":45000,"ppks":[{"ppk_num":286,"pwd":"123456","license_key":[73,10,7,39,4,50]}]}`)
+
+					encoded, err := encService.EncodeAES(data)
+					if err != nil {
+						log.Printf("err: %v", err)
+						return
+					}
+
+					encoded = []byte(`U2FsdGVkX19U+bdUkih6g4ejjpnYYGH2cw0c5LFJ98dczaZv9+KfEzCLPviqQWRFxQR59UP8rHI7zOrZiqs6+ijAHyF0Z34SHquc2dTTXyCwQ9jvyX2tmKJSHWVV+KsR23goCYOyJXA1/kPr9KrV0o5AQLbTza55465BUdMENOP7HiDiVWQRjozDxCdiLHx0MP+Jx1DN21WTkyV7RDVHtw==`)
+
+					log.Printf("[WS] send login data %s", encoded)
+
+					if err := connection.WriteMessage(websocket.TextMessage, encoded); err != nil {
+						log.Printf("err: %v", err)
+						return
+					}
+
+					log.Println("message sent")
+
+				} else if messageType == "error" {
+					log.Printf("got error from WS server: %v", err)
+				} else {
+					println("can't handle json response")
+				}
+			}(message)
+		default:
+			continue
+		}
 	}
-
-	println("exit")
-}
-
-func Encrypt(data string) string {
-	// Load your secret key from a safe place and reuse it across multiple
-	// Seal/Open calls. (Obviously don't use this example key for anything
-	// real.) If you want to convert a passphrase to a key, use a suitable
-	// package like bcrypt or scrypt.
-	// When decoded the key should be 16 bytes (AES-128) or 32 (AES-256).
-	key, _ := hex.DecodeString(string(secretKey))
-	plaintext := []byte(data)
-
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
-	nonce := make([]byte, 12)
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
-	}
-
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
-
-	return string(ciphertext)
-}
-
-func Decrypt(data string) string {
-	// Load your secret key from a safe place and reuse it across multiple
-	// Seal/Open calls. (Obviously don't use this example key for anything
-	// real.) If you want to convert a passphrase to a key, use a suitable
-	// package like bcrypt or scrypt.
-	// When decoded the key should be 16 bytes (AES-128) or 32 (AES-256).
-	key, _ := hex.DecodeString(string(secretKey))
-	ciphertext, _ := hex.DecodeString(data)
-	nonce, _ := hex.DecodeString("64a9433eae7ccceee2fc0eda")
-
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return string(plaintext)
 }
