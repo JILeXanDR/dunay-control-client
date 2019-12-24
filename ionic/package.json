@@ -1,0 +1,15 @@
+{
+  "name": "ionic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cordova.js",
+  "dependencies": {
+    "serve": "^11.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "serve"
+  },
+  "author": "",
+  "license": "ISC"
+}

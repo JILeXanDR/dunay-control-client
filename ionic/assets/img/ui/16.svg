@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" fill='#336699'
+	 viewBox="0 0 48 48" enable-background="new 0 0 48 48" xml:space="preserve">
+<g id="guides_1_" display="none">
+	<g id="_x33_px_margins" display="inline" opacity="0.2">
+		<path fill="#3EA3FF" d="M42,6V42H6V6H42 M48,0H0V48H48V0L48,0z"/>
+	</g>
+</g>
+<g id="kettle">
+	<g>
+		<path d="M19.2,19.1v-6.8h16.6v6.8c0.1,0,0.2,0.1,0.3,0.1c0.7,0.3,1.5,0.7,2.1,1.1V7.5H16.8v12.8c0.7-0.4,1.4-0.8,2.1-1.1
+			C19.1,19.1,19.1,19.1,19.2,19.1L19.2,19.1z M19.2,19.1"/>
+		<path d="M10.3,20.4L6,24.7l4.8,4.8c0.2-1.1,0.5-2.1,0.9-3.1c0.5-1.1,1-2.1,1.7-3L10.3,20.4z M10.3,20.4"/>
+		<path d="M30.8,20.5h-2v-2.4h-2.4v2.4h-2.1c-6.2,0-11.2,5-11.2,11.2V41h29v-9.3C42,25.5,37,20.5,30.8,20.5L30.8,20.5z M30.8,20.5"
+			/>
+	</g>
+</g>
+</svg>

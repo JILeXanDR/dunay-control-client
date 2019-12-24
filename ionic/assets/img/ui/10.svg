@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" fill='#336699'
+	 viewBox="0 0 48 48" enable-background="new 0 0 48 48" xml:space="preserve">
+<g id="guides_1_" display="none">
+	<g id="_x33_px_margins" display="inline" opacity="0.2">
+		<path fill="#3EA3FF" d="M42,6V42H6V6H42 M48,0H0V48H48V0L48,0z"/>
+	</g>
+</g>
+<g id="door">
+	<g>
+		<path d="M37,6H11c-0.6,0-1,0.4-1,1v1v32v1v1h2v-1v-1V9c0-0.6,0.4-1,1-1h22c0.6,0,1,0.4,1,1v31v1v1h2v-1v-1V8V7C38,6.4,37.6,6,37,6
+			z"/>
+		<path d="M33,10H15c-0.6,0-1,0.4-1,1v29v1v1h1h1h16h1h1v-1v-1V11C34,10.4,33.6,10,33,10z M17,29h-1v-6h1V29z"/>
+	</g>
+</g>
+</svg>
