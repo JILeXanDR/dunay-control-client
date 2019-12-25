@@ -148,6 +148,7 @@ func (client *vinbestClient) Run() error {
 						}
 						break
 					default:
+						// {"events":[{"data":[72,16],"time":1577253372112},{"data":[8,40],"time":1577253372112}],"ppk_num":286,"type":"events"}
 						logger.Error("can't handle json response")
 					}
 					break
