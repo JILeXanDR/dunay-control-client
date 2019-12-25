@@ -2177,13 +2177,16 @@ webpackJsonp([0], {
                     console.log('[JILEXANDR] generateSecretKey', l);
                     return l
                 }, l.prototype.aesEncrypt = function (l) {
+
+                    window.aesEncrypt = (data) => _n.a.AES.encrypt(data, this.secret_key).toString();
+
                     const res = _n.a.AES.encrypt(l, this.secret_key).toString();
                     console.log('[JILEXANDR] aesEncrypt', l, res);
                     return res
                 }, l.prototype.aesDecrypt = function (l) {
-                    window.aesDecrypt = (data) => {
-                        return _n.a.AES.decrypt(data, this.secret_key).toString(_n.a.enc.Utf8);
-                    };
+
+                    window.aesDecrypt = (data) => _n.a.AES.decrypt(data, this.secret_key).toString(_n.a.enc.Utf8);
+
                     try {
                         const d = _n.a.AES.decrypt(l, this.secret_key);
                         const res = d.toString(_n.a.enc.Utf8);

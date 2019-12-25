@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.js"></script>
+
+<script>
+
+  // const json = {
+  //   "type": "login",
+  //   "user_name": "a.shtovba",
+  //   "ping_interval": 60000,
+  //   "ppks": [{ "ppk_num": 286, "pwd": "123456", "license_key": [73, 10, 7, 39, 4, 50] }]
+  // };
+  //
+  // const enctypted = CryptoJS.AES.encrypt(JSON.stringify(json), '1111111111111111');
+  // console.log('enctypted:', enctypted.toString());
+
+  const decrypted = CryptoJS.AES.encrypt(`hello`, '1111111111111111');
+  console.log(decrypted);
+  console.log('decrypted:', CryptoJS.enc.Utf8.stringify(decrypted));
+</script>
+
+</body>
+</html>
