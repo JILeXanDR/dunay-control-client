@@ -4,21 +4,19 @@ import (
 	"dunay-control-client/pkg/encryption"
 	"dunay-control-client/pkg/venbest"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"log"
-	"net/http"
-	"net/url"
+	"time"
 )
 
 func main() {
 
 	logger := logrus.New()
-	logger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: true})
+	logger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: false})
 	logger.SetLevel(logrus.TraceLevel)
 
-	// TODO: generate with `genKey(16)` when EAS encyption will by fixes
+	// TODO: generate with `genKey(16)` when EAS encyption will by fixed
 	key := []byte("1111111111111111")
 	//key = genKey(16)
 
@@ -42,7 +40,7 @@ IH6nQGf1XfuEesXycwIDAQAB
 		Pwd:        "123456",
 		LicenseKey: []uint{73, 10, 7, 39, 4, 50},
 		Logger:     logger,
-		MessageEncoder: func(message []byte) ([]byte, error) {
+		EncodeMessage: func(message []byte) ([]byte, error) {
 			b, err := aesEncryptionService.Encode(message)
 			if err != nil {
 				return nil, err
@@ -50,30 +48,38 @@ IH6nQGf1XfuEesXycwIDAQAB
 
 			return []byte(base64.StdEncoding.EncodeToString(b)), nil
 		},
-		MessageDecoder: func(message []byte) ([]byte, error) {
+		DecodeMessage: func(message []byte) ([]byte, error) {
 			return aesEncryptionService.Decode(message)
 		},
-		KeyPreparer: func() ([]byte, error) {
+		EncodeKey: func() ([]byte, error) {
 			return rsaEncryptionService.Encode(key)
-		},
-		StateHandler: func(payload map[string]interface{}) {
-			logger.WithField("payload", payload).Debug("state handler")
-			sendMessage(fmt.Sprintf("state:\n\n%s", beautyJSON(payload)))
-		},
-		EventsHandler: func(payload map[string]interface{}) {
-			logger.WithField("payload", payload).Debug("events handler")
-			sendMessage(fmt.Sprintf("event:\n\n%s", beautyJSON(payload)))
 		},
 	})
 
+	go func() {
+		for {
+			select {
+			case event := <-client.Events:
+				logger.WithField("info", event).Debug("new event happened")
+
+				switch event.Code {
+				case venbest.EventCode64:
+					sendMessage(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)))
+				case venbest.EventCode72:
+					sendMessage(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)))
+				case venbest.EventCode108:
+					sendMessage(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+				case venbest.EventCode109:
+					sendMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+				default:
+					sendMessage(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
+				}
+			case state := <-client.States:
+				logger.WithField("info", state).Debug("get state")
+				sendMessage(fmt.Sprintf("Текущее состояние: %s", beautyJSON(state)))
+			}
+		}
+	}()
+
 	log.Fatal(client.Run())
-}
-
-func beautyJSON(v interface{}) []byte {
-	j, _ := json.MarshalIndent(v, "", "    ")
-	return j
-}
-
-func sendMessage(text string) {
-	http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%v&text=%s", "846079612:AAEAH62nzgQWY51hEoRsupx9OgdDIPAsMl8", 253637452, url.QueryEscape(text)))
 }
