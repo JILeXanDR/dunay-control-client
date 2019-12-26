@@ -3,11 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -26,26 +24,47 @@ func beautyJSON(v interface{}) []byte {
 	return j
 }
 
-func sendTelegramMessage(text string) {
-	println("sendTelegramMessage", text)
-	http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendTelegramMessage?chat_id=%v&text=%s", "846079612:AAEAH62nzgQWY51hEoRsupx9OgdDIPAsMl8", 253637452, url.QueryEscape(text)))
+func sendSkypeMessage(text string) {
+	send := func(conversationID string) {
+		println("sendSkypeMessage", text)
+
+		body := map[string]interface{}{
+			"text":            text,
+			"conversation_id": conversationID,
+		}
+
+		b, err := json.Marshal(body)
+		if err != nil {
+			println("err", err.Error())
+			return
+		}
+
+		req, err := http.NewRequest(http.MethodPost, config.BotAPIEndpoint, bytes.NewReader(b))
+		if err != nil {
+			println("err", err.Error())
+			return
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Api-Key", config.BotAPIToken)
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			println("err", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+
+		parseResult(resp, nil)
+	}
+
+	for _, conversationID := range config.BotAPIRecipients {
+		send(conversationID)
+	}
 }
 
-func sendSkypeMessage(text string) {
-	println("sendSkypeMessage", text)
-
-	body := map[string]interface{}{
-		"text":            text,
-		"conversation_id": "8:jilexandr",
-	}
-
-	b, err := json.Marshal(body)
-	if err != nil {
-		println("err", err.Error())
-		return
-	}
-
-	resp, err := http.Post("https://api.telegram.org/web/message", "", bytes.NewReader(b))
+func parseResult(resp *http.Response, err error) {
 	if err != nil {
 		println("err", err.Error())
 		return

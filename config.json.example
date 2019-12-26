@@ -1,0 +1,20 @@
+{
+  "aes_password": "",
+  "rsa_public_key": "",
+  "bot_api_endpoint": "https://pdahelp.info/web/message",
+  "bot_api_token": "",
+  "bot_api_recipients": [],
+  "venbest_server": "78.137.4.125",
+  "venbest_port": 19001,
+  "venbest_username": "",
+  "venbest_ppk_num": 0,
+  "venbest_pwd": "",
+  "venbest_license_key": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}

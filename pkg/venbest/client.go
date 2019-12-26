@@ -9,16 +9,17 @@ import (
 )
 
 type ClientOptions struct {
-	ServerHost    string
-	ServerPort    int
-	Username      string
-	PPKNum        uint
-	Pwd           string
-	LicenseKey    []uint
-	Logger        *logrus.Logger
-	EncodeMessage func(message []byte) ([]byte, error)
-	DecodeMessage func(message []byte) ([]byte, error)
-	EncodeKey     func() ([]byte, error)
+	ServerHost      string
+	ServerPort      int
+	Username        string
+	PPKNum          uint
+	Pwd             string
+	LicenseKey      []uint
+	Logger          *logrus.Logger
+	EncodeMessage   func(message []byte) ([]byte, error)
+	DecodeMessage   func(message []byte) ([]byte, error)
+	EncodeKey       func() ([]byte, error)
+	PrepareUserData func() ([]byte, error)
 }
 
 type Client struct {
@@ -93,91 +94,6 @@ func (client *Client) Run() error {
 		return err
 	}
 
-	//go func() {
-	//	time.Sleep(3 * time.Second)
-	//	client.processMessage <- []byte(`{
-	//  "events": [
-	//    {
-	//      "data": [
-	//        72,
-	//        16
-	//      ],
-	//      "time": 1577253372112
-	//    },
-	//    {
-	//      "data": [
-	//        64,
-	//        40
-	//      ],
-	//      "time": 1577253372112
-	//    }
-	//  ],
-	//  "ppk_num": 286,
-	//  "type": "events"
-	//}`)
-	//}()
-
-	//go func() {
-	//	time.Sleep(1 * time.Second)
-	//	client.processMessage <- []byte(`{
-	//  "fallbackIP": "193.108.249.060",
-	//  "ppks": [
-	//    {
-	//      "accum": 1,
-	//      "door": 1,
-	//      "group": 0,
-	//      "groups": {
-	//        "1": 0
-	//      },
-	//      "lines": {
-	//        "1": 88,
-	//        "2": 88,
-	//        "3": 88,
-	//        "4": 88,
-	//        "5": 88,
-	//        "6": 88,
-	//        "7": 88,
-	//        "8": 88
-	//      },
-	//      "online": 1,
-	//      "power": 1,
-	//      "ppk_num": 286,
-	//      "relay2": 0,
-	//      "scenario": [],
-	//      "uk2": 0,
-	//      "uk3": 0
-	//    },
-	//    {
-	//      "accum": 1,
-	//      "door": 1,
-	//      "group": 0,
-	//      "groups": {
-	//        "1": 0
-	//      },
-	//      "lines": {
-	//        "1": 88,
-	//        "2": 88,
-	//        "3": 88,
-	//        "4": 88,
-	//        "5": 88,
-	//        "6": 88,
-	//        "7": 88,
-	//        "8": 88
-	//      },
-	//      "online": 1,
-	//      "power": 1,
-	//      "ppk_num": 286,
-	//      "relay2": 0,
-	//      "scenario": [],
-	//      "uk2": 0,
-	//      "uk3": 0
-	//    }
-	//  ],
-	//  "time": 1577290359942,
-	//  "type": "state"
-	//}`)
-	//}()
-
 	go client.readMessages(wsLogger.Logger)
 
 	for {
@@ -190,6 +106,11 @@ func (client *Client) Run() error {
 
 // AES data
 func (client *Client) prepareUserData() ([]byte, error) {
+
+	if client.PrepareUserData != nil {
+		return client.PrepareUserData()
+	}
+
 	data := loginData{
 		Type:         "login",
 		UserName:     client.Username,
@@ -212,13 +133,6 @@ func (client *Client) prepareUserData() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO: fix encoder above
-	// a.shtovba
-	encoded = []byte(`U2FsdGVkX19jIyfUv0bkdP9Kcr1yP83XEyGrEZ0Pdn9aGKWYufmKcOozJtPnB7UyklqanvTIwMkm/V2+foQA3BGlbkAnEhZyEsbyzCW8RjuOZ9M/Ir1aOe+cO+gSIImXPjH8hE/qIlkXB0piOW53AJTO52BS4s7kMOat+RChiDDVlBgZL3ABzAHHb/SU+LC211AARjdooKxnIEA/n/B6PA==`)
-
-	// a.shovba1
-	encoded = []byte(`U2FsdGVkX18uEU7JYCAOV8M4ZRp+OzdSiRsl7XBraCD4u6VBsbsOVeir4XqHCpRKPdcenofKC4vTv5eTVzqoF0E7idf4y30SV3bHTh9okGnkhGVcrE/bJjFSKcU/sqEOXr9T3l3HpFgfEbLzenp5JEEEBEH01v2CnNYDXtqpOIFhgooKddYaParafe0SeV7pAKS1YpMB7lUHJKLtP3JA2w==`)
 
 	client.Logger.WithField("plain", data).WithField("encoded", string(encoded)).Debug("prepare AES encoded user data")
 

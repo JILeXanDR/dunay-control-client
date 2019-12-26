@@ -10,36 +10,43 @@ import (
 	"time"
 )
 
+var config Config
+
 func main() {
+	if err := readConfig("config.json", &config); err != nil {
+		log.Fatal(err)
+	}
 
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: false})
 	logger.SetLevel(logrus.TraceLevel)
 
 	// TODO: generate with `genKey(16)` when EAS encyption will by fixed
-	key := []byte("1111111111111111")
+	key := []byte(config.AESPassword)
 	//key = genKey(16)
 
 	logger.WithField("key", string(key)).Printf("generated AES key")
 
-	pubKey := []byte(`-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYJF3lSVSZtncpyCPrFvjNiRoM
-Htt4wOi7ABqZ1XOWYBoDicUyweZ2fLmxtepatHG7alnPNak441qYis7d513284Nc
-31oNP8sKcwZJS//NQfgzE1H2elhfJoA2Jrrln/Z93DzrWsPD2Oddgw8YGmEHlm5U
-IH6nQGf1XfuEesXycwIDAQAB
------END PUBLIC KEY-----`)
-
-	rsaEncryptionService := encryption.NewRSAEncryptionService(pubKey)
+	rsaEncryptionService := encryption.NewRSAEncryptionService([]byte(config.RSAPublicKey))
 	aesEncryptionService := encryption.NewAESEncryptionService(key)
 
 	client := venbest.NewClient(venbest.ClientOptions{
-		ServerHost: "78.137.4.125",
-		ServerPort: 19001,
-		Username:   "a.shtovba",
-		PPKNum:     286,
-		Pwd:        "123456",
-		LicenseKey: []uint{73, 10, 7, 39, 4, 50},
+		ServerHost: config.VenbestServer,
+		ServerPort: config.VenbestPort,
+		Username:   config.VenbestUsername,
+		PPKNum:     config.VenbestPPKNum,
+		Pwd:        config.VenbestPwd,
+		LicenseKey: config.VenbestLicenseKey,
 		Logger:     logger,
+		PrepareUserData: func() ([]byte, error) {
+			//{
+			//	"type": "login",
+			//	"user_name": "andersen_bot",
+			//	"ping_interval": 60000,
+			//	"ppks": [{ "ppk_num": 286, "pwd": "123456", "license_key": [73, 10, 7, 39, 4, 50] }]
+			//  }
+			return []byte(`U2FsdGVkX1+pkUSfOyfkR9CRTllynWSQCZln8K/Imm7X76PYnpfaZmBmHyRFXXBFh9BZZFsXEkw2PnOnQJ1PMSPcTpVBQil9mtatUvBZenzSYgO2aRn2ygvcc43pVDLOcOuss/gY7OIUAPix+yotyjmoq0NG8RNuaSvyz3EY7FW6csTuD94WV6Tp9251MFlz+Yg1RYAc0CXcICR4TMQbbQ==`), nil
+		},
 		EncodeMessage: func(message []byte) ([]byte, error) {
 			b, err := aesEncryptionService.Encode(message)
 			if err != nil {
@@ -56,8 +63,6 @@ IH6nQGf1XfuEesXycwIDAQAB
 		},
 	})
 
-	send := sendSkypeMessage
-
 	go func() {
 		for {
 			select {
@@ -66,19 +71,19 @@ IH6nQGf1XfuEesXycwIDAQAB
 
 				switch event.Code {
 				case venbest.EventCode64:
-					send(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)))
 				case venbest.EventCode72:
-					send(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)))
 				case venbest.EventCode108:
-					send(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
 				case venbest.EventCode109:
-					send(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
 				default:
-					send(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
+					//send(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
 				}
 			case state := <-client.States:
 				logger.WithField("info", state).Debug("get state")
-				send(fmt.Sprintf("Текущее состояние: %s", beautyJSON(state)))
+				//sendSkypeMessage(fmt.Sprintf("Текущее состояние: %s", beautyJSON(state)))
 			}
 		}
 	}()
