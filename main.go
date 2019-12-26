@@ -31,12 +31,12 @@ func main() {
 	aesEncryptionService := encryption.NewAESEncryptionService(key)
 
 	client := venbest.NewClient(venbest.ClientOptions{
-		ServerHost: config.VenbestServer,
-		ServerPort: config.VenbestPort,
-		Username:   config.VenbestUsername,
-		PPKNum:     config.VenbestPPKNum,
-		Pwd:        config.VenbestPwd,
-		LicenseKey: config.VenbestLicenseKey,
+		ServerHost: config.Venbest.Server,
+		ServerPort: config.Venbest.Port,
+		Username:   config.Venbest.Username,
+		PPKNum:     config.Venbest.PPKNumber,
+		Pwd:        config.Venbest.Password,
+		LicenseKey: config.Venbest.LicenseKey,
 		Logger:     logger,
 		PrepareUserData: func() ([]byte, error) {
 			//{

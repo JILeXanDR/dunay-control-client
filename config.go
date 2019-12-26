@@ -6,18 +6,26 @@ import (
 	"os"
 )
 
+type botAPIConfig struct {
+	Endpoint   string   `json:"endpoint"`
+	Token      string   `json:"token"`
+	Recipients []string `json:"recipients"`
+}
+
+type venbestConfig struct {
+	Server     string `json:"server"`
+	Port       int    `json:"port"`
+	Username   string `json:"username"`
+	PPKNumber  uint   `json:"ppk_number"`
+	Password   string `json:"password"`
+	LicenseKey []uint `json:"license_key"`
+}
+
 type Config struct {
-	AESPassword       string   `json:"aes_password"`
-	RSAPublicKey      string   `json:"rsa_public_key"`
-	BotAPIEndpoint    string   `json:"bot_api_endpoint"`
-	BotAPIToken       string   `json:"bot_api_token"`
-	BotAPIRecipients  []string `json:"bot_api_recipients"`
-	VenbestServer     string   `json:"venbest_server"`
-	VenbestPort       int      `json:"venbest_port"`
-	VenbestUsername   string   `json:"venbest_username"`
-	VenbestPPKNum     uint     `json:"venbest_ppk_num"`
-	VenbestPwd        string   `json:"venbest_pwd"`
-	VenbestLicenseKey []uint   `json:"venbest_license_key"`
+	AESPassword  string        `json:"aes_password"`
+	RSAPublicKey string        `json:"rsa_public_key"`
+	BotAPI       botAPIConfig  `json:"bot_api"`
+	Venbest      venbestConfig `json:"venbest"`
 }
 
 func readConfig(path string, config *Config) error {

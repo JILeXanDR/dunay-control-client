@@ -39,14 +39,14 @@ func sendSkypeMessage(text string) {
 			return
 		}
 
-		req, err := http.NewRequest(http.MethodPost, config.BotAPIEndpoint, bytes.NewReader(b))
+		req, err := http.NewRequest(http.MethodPost, config.BotAPI.Endpoint, bytes.NewReader(b))
 		if err != nil {
 			println("err", err.Error())
 			return
 		}
 
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Api-Key", config.BotAPIToken)
+		req.Header.Set("Api-Key", config.BotAPI.Token)
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
@@ -59,7 +59,7 @@ func sendSkypeMessage(text string) {
 		parseResult(resp, nil)
 	}
 
-	for _, conversationID := range config.BotAPIRecipients {
+	for _, conversationID := range config.BotAPI.Recipients {
 		send(conversationID)
 	}
 }
