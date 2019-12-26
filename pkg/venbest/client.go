@@ -106,7 +106,6 @@ func (client *Client) Run() error {
 
 // AES data
 func (client *Client) prepareUserData() ([]byte, error) {
-
 	if client.PrepareUserData != nil {
 		return client.PrepareUserData()
 	}
