@@ -56,6 +56,8 @@ IH6nQGf1XfuEesXycwIDAQAB
 		},
 	})
 
+	send := sendSkypeMessage
+
 	go func() {
 		for {
 			select {
@@ -64,19 +66,19 @@ IH6nQGf1XfuEesXycwIDAQAB
 
 				switch event.Code {
 				case venbest.EventCode64:
-					sendMessage(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)))
+					send(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)))
 				case venbest.EventCode72:
-					sendMessage(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)))
+					send(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)))
 				case venbest.EventCode108:
-					sendMessage(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+					send(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
 				case venbest.EventCode109:
-					sendMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+					send(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
 				default:
-					sendMessage(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
+					send(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
 				}
 			case state := <-client.States:
 				logger.WithField("info", state).Debug("get state")
-				sendMessage(fmt.Sprintf("Текущее состояние: %s", beautyJSON(state)))
+				send(fmt.Sprintf("Текущее состояние: %s", beautyJSON(state)))
 			}
 		}
 	}()
