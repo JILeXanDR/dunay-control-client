@@ -24,7 +24,7 @@ func beautyJSON(v interface{}) []byte {
 	return j
 }
 
-func sendSkypeMessage(text string) {
+func sendSkypeMessage(text string, recipients []string) {
 	send := func(conversationID string) {
 		println("sendSkypeMessage", text)
 
@@ -59,7 +59,7 @@ func sendSkypeMessage(text string) {
 		parseResult(resp, nil)
 	}
 
-	for _, conversationID := range config.BotAPI.Recipients {
+	for _, conversationID := range recipients {
 		send(conversationID)
 	}
 }

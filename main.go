@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"log"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -37,7 +39,7 @@ func main() {
 		PPKNum:     config.Venbest.PPKNumber,
 		Pwd:        config.Venbest.Password,
 		LicenseKey: config.Venbest.LicenseKey,
-		Logger:     logger,
+		Logger:     logger.WithField("service", "venbest client").Logger,
 		PrepareUserData: func() ([]byte, error) {
 			//{
 			//	"type": "login",
@@ -71,22 +73,62 @@ func main() {
 
 				switch event.Code {
 				case venbest.EventCode64:
-					sendSkypeMessage(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Офис закрыт (%s)", event.When.Format(time.RFC1123)), config.BotAPI.Recipients)
 				case venbest.EventCode72:
-					sendSkypeMessage(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Офис открыт (%s)", event.When.Format(time.RFC1123)), config.BotAPI.Recipients)
 				case venbest.EventCode108:
-					sendSkypeMessage(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)), privateConversations())
 				case venbest.EventCode109:
-					sendSkypeMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)))
+					sendSkypeMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)), privateConversations())
 				default:
 					//send(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
 				}
 			case state := <-client.States:
 				logger.WithField("info", state).Debug("get state")
-				//sendSkypeMessage(fmt.Sprintf("Текущее состояние: %s", beautyJSON(state)))
+				//sendSkypeMessage(fmt.Sprintf("Текущее состояние ППК (%s):\n```\n%s\n```", state.When.Format(time.RFC1123), beautyJSON(state.PPKs)), privateConversations())
 			}
 		}
 	}()
 
-	log.Fatal(client.Run())
+	go func() {
+		log.Fatal(client.Start())
+	}()
+
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "pong")
+	})
+
+	log.Fatal(http.ListenAndServe(config.DebugServerPort, nil))
+}
+
+func privateConversations() []string {
+	return castToSliceOfStrings(filterByFunc(castToSliceOfInterfaces(config.BotAPI.Recipients), func(val interface{}) bool {
+		return strings.HasPrefix(val.(string), "8:")
+	}))
+}
+
+func filterByFunc(slice []interface{}, filterFunc func(val interface{}) bool) []interface{} {
+	var res []interface{}
+	for _, val := range slice {
+		if filterFunc(val) {
+			res = append(res, val)
+		}
+	}
+	return res
+}
+
+func castToSliceOfStrings(slice []interface{}) []string {
+	var res []string
+	for _, val := range slice {
+		res = append(res, val.(string))
+	}
+	return res
+}
+
+func castToSliceOfInterfaces(slice []string) []interface{} {
+	var res []interface{}
+	for _, val := range slice {
+		res = append(res, val)
+	}
+	return res
 }

@@ -3,8 +3,8 @@ package venbest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
+	"net/url"
 	"time"
 )
 
@@ -24,11 +24,9 @@ type ClientOptions struct {
 
 type Client struct {
 	ClientOptions
-	Events         chan PPKEvent
-	States         chan State
-	processMessage chan []byte
-	// conn represents WS connection with server
-	conn *websocket.Conn
+	Events chan PPKEvent
+	States chan State
+	ws     *ws
 }
 
 func NewClient(options ClientOptions) *Client {
@@ -36,12 +34,16 @@ func NewClient(options ClientOptions) *Client {
 		options,
 		make(chan PPKEvent),
 		make(chan State),
-		make(chan []byte),
-		nil,
+		&ws{
+			&url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%v", options.ServerHost, options.ServerPort)},
+			make(chan []byte),
+			nil,
+			options.Logger.WithField("service", "WS").Logger,
+		},
 	}
 }
 
-func (client *Client) recognizeMessage(message []byte) (interface{}, error) {
+func (client *Client) decodeMessage(message []byte) (interface{}, error) {
 	if string(message) == "ping" || string(message) == "pong" {
 		return string(message), nil
 	}
@@ -68,20 +70,13 @@ func (client *Client) recognizeMessage(message []byte) (interface{}, error) {
 	return res, nil
 }
 
-func (client *Client) Run() error {
-	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s:%v", client.ServerHost, client.ServerPort), nil)
+func (client *Client) Start() error {
+	closeFunc, err := client.ws.connect()
 	if err != nil {
+		client.Logger.WithError(err).Error("can't connect to WS server")
 		return err
 	}
-	defer func() {
-		if err := conn.Close(); err != nil {
-			client.Logger.WithError(err).Error("failed to close WS connection")
-		}
-	}()
-
-	client.conn = conn
-
-	wsLogger := client.Logger.WithField("service", "WS")
+	defer closeFunc()
 
 	encodedKey, err := client.EncodeKey()
 	if err != nil {
@@ -89,16 +84,16 @@ func (client *Client) Run() error {
 		return err
 	}
 
-	if err := client.wsSend(wsLogger.Logger, encodedKey); err != nil {
+	if err := client.ws.send(encodedKey); err != nil {
 		client.Logger.WithError(err).Error("can't send key")
 		return err
 	}
 
-	go client.readMessages(wsLogger.Logger)
+	go client.ws.readMessages()
 
 	for {
 		select {
-		case message := <-client.processMessage:
+		case message := <-client.ws.processMessage:
 			client.processSingleMessage(message)
 		}
 	}
@@ -138,26 +133,6 @@ func (client *Client) prepareUserData() ([]byte, error) {
 	return encoded, nil
 }
 
-func (client *Client) readMessages(wsLogger *logrus.Logger) {
-	for {
-		wsLogger.Println("waiting for incoming message...")
-		_, message, err := client.conn.ReadMessage()
-		if err != nil {
-			wsLogger.WithError(err).Printf("can't read message")
-			continue
-		}
-
-		wsLogger.WithField("data", message).Printf("Received plain message")
-
-		client.processMessage <- message
-	}
-}
-
-func (client *Client) wsSend(logger *logrus.Logger, data []byte) error {
-	logger.WithField("data", data).Printf("send message")
-	return client.conn.WriteMessage(websocket.TextMessage, data)
-}
-
 func (client *Client) processSingleMessage(message []byte) {
 	logger := client.Logger.WithField("original_message", string(message))
 
@@ -167,7 +142,7 @@ func (client *Client) processSingleMessage(message []byte) {
 		logger.Debug("processing message done.")
 	}()
 
-	res, err := client.recognizeMessage(message)
+	res, err := client.decodeMessage(message)
 	if err != nil {
 		logger.WithError(err).Error("can't recognize message")
 		return
@@ -190,7 +165,7 @@ func (client *Client) processSingleMessage(message []byte) {
 				return
 			}
 
-			if err := client.wsSend(logger.Logger, encodedUserData); err != nil {
+			if err := client.ws.send(encodedUserData); err != nil {
 				logger.WithError(err).Error("can't send WS message")
 				return
 			}
