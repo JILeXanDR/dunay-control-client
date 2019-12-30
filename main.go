@@ -68,7 +68,14 @@ func main() {
 		for {
 			select {
 			case event := <-client.Events:
-				logger.WithField("info", event).Debug("new event happened")
+				l := logger.WithField("event", event)
+				l.Debug("new event happened")
+
+				createdDuration := time.Now().Sub(event.When)
+				if createdDuration >= 15*time.Minute {
+					l.Debugf("skip event (created %s ago)", createdDuration)
+					return
+				}
 
 				switch event.Code {
 				case venbest.EventCode64:
