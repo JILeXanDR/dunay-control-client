@@ -22,10 +22,19 @@ type ClientOptions struct {
 	PrepareUserData func() ([]byte, error)
 }
 
+type ClientErr struct {
+	message string
+}
+
+func (err ClientErr) Error() string {
+	return err.message
+}
+
 type Client struct {
 	ClientOptions
 	Events chan PPKEvent
 	States chan State
+	Errors chan ClientErr
 	ws     *ws
 }
 
@@ -34,6 +43,7 @@ func NewClient(options ClientOptions) *Client {
 		options,
 		make(chan PPKEvent),
 		make(chan State),
+		make(chan ClientErr),
 		&ws{
 			&url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%v", options.ServerHost, options.ServerPort)},
 			make(chan []byte),
@@ -156,7 +166,7 @@ func (client *Client) processSingleMessage(message []byte) {
 
 		switch val["type"].(string) {
 		case "error":
-			logger.WithField("response_error", val["message"]).Info("got error from WS server")
+			client.Errors <- ClientErr{message: val["message"].(string)}
 			break
 		case "key_accepted":
 			encodedUserData, err := client.prepareUserData()

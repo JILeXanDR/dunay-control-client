@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"log"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -86,19 +85,13 @@ func main() {
 			case state := <-client.States:
 				logger.WithField("info", state).Debug("get state")
 				//sendSkypeMessage(fmt.Sprintf("Текущее состояние ППК (%s):\n```\n%s\n```", state.When.Format(time.RFC1123), beautyJSON(state.PPKs)), privateConversations())
+			case err := <-client.Errors:
+				logger.WithError(err).Error("client returned unexpected error")
 			}
 		}
 	}()
 
-	go func() {
-		log.Fatal(client.Start())
-	}()
-
-	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "pong")
-	})
-
-	log.Fatal(http.ListenAndServe(config.DebugServerPort, nil))
+	log.Fatal(client.Start())
 }
 
 func privateConversations() []string {

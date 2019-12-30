@@ -22,11 +22,10 @@ type venbestConfig struct {
 }
 
 type Config struct {
-	DebugServerPort string        `json:"debug_server_port"`
-	AESPassword     string        `json:"aes_password"`
-	RSAPublicKey    string        `json:"rsa_public_key"`
-	BotAPI          botAPIConfig  `json:"bot_api"`
-	Venbest         venbestConfig `json:"venbest"`
+	AESPassword  string        `json:"aes_password"`
+	RSAPublicKey string        `json:"rsa_public_key"`
+	BotAPI       botAPIConfig  `json:"bot_api"`
+	Venbest      venbestConfig `json:"venbest"`
 }
 
 func readConfig(path string, config *Config) error {
