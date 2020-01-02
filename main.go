@@ -95,7 +95,7 @@ func main() {
 				}
 			case state := <-client.States:
 				logger.WithField("info", state).Debug("get state")
-				//sendSkypeMessage(fmt.Sprintf("Текущее состояние ППК (%s):\n```\n%s\n```", state.When.Format(time.RFC1123), beautyJSON(state.PPKs)), privateConversations())
+				sendSkypeMessage(fmt.Sprintf("Текущее состояние ППК (%s):\n```\n%s\n```", state.When.Format(time.RFC1123), beautyJSON(state.PPKs)), privateConversations())
 			case err := <-client.Errors:
 				logger.WithError(err).Error("client returned unexpected error")
 			}
