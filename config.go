@@ -23,6 +23,7 @@ type venbestConfig struct {
 }
 
 type Config struct {
+	Port         uint          `mapstructure:"port"`
 	AESPassword  string        `mapstructure:"aes_password"`
 	RSAPublicKey string        `mapstructure:"rsa_public_key"`
 	BotAPI       botAPIConfig  `mapstructure:"bot_api"`
@@ -30,6 +31,7 @@ type Config struct {
 }
 
 var defaults = map[string]interface{}{
+	"port":           8000,
 	"aes_password":   "",
 	"rsa_public_key": "",
 
