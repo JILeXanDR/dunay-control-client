@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"os"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -72,6 +74,13 @@ func readConfig(dst string, config *Config) error {
 
 	if err := v.Unmarshal(&config); err != nil {
 		return err
+	}
+
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		config.Port = uint(defaults["port"].(float64))
+	} else {
+		config.Port = uint(port)
 	}
 
 	return nil
