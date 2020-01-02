@@ -104,11 +104,13 @@ func main() {
 	}()
 
 	go func() {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "Hello World!")
-		})
-		http.ListenAndServe(fmt.Sprintf(":%v", config.Port), nil)
+		if err := client.Start(); err != nil {
+			logger.WithError(err).Error("can't start venbest client")
+		}
 	}()
 
-	log.Fatal(client.Start())
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello World!")
+	})
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.Port), nil))
 }
