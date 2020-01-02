@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"time"
@@ -100,6 +101,13 @@ func main() {
 				logger.WithError(err).Error("client returned unexpected error")
 			}
 		}
+	}()
+
+	go func() {
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "Hello World!")
+		})
+		http.ListenAndServe(":80", nil)
 	}()
 
 	log.Fatal(client.Start())
