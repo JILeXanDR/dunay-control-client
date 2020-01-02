@@ -78,3 +78,35 @@ func parseResult(resp *http.Response, err error) {
 
 	println("content", string(content))
 }
+
+func filterByFunc(slice []interface{}, filterFunc func(val interface{}) bool) []interface{} {
+	var res []interface{}
+	for _, val := range slice {
+		if filterFunc(val) {
+			res = append(res, val)
+		}
+	}
+	return res
+}
+
+func castToSliceOfStrings(slice []interface{}) []string {
+	var res []string
+	for _, val := range slice {
+		res = append(res, val.(string))
+	}
+	return res
+}
+
+func castToSliceOfInterfaces(slice []string) []interface{} {
+	var res []interface{}
+	for _, val := range slice {
+		res = append(res, val)
+	}
+	return res
+}
+
+func privateConversations() []string {
+	return castToSliceOfStrings(filterByFunc(castToSliceOfInterfaces(config.BotAPI.Recipients), func(val interface{}) bool {
+		return strings.HasPrefix(val.(string), "8:")
+	}))
+}

@@ -1,45 +1,74 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"os"
+	"fmt"
+	"github.com/spf13/viper"
+	"path"
+	"strings"
 )
 
 type botAPIConfig struct {
-	Endpoint   string   `json:"endpoint"`
-	Token      string   `json:"token"`
-	Recipients []string `json:"recipients"`
+	Endpoint   string   `mapstructure:"endpoint"`
+	Token      string   `mapstructure:"token"`
+	Recipients []string `mapstructure:"recipients"`
 }
 
 type venbestConfig struct {
-	Server     string `json:"server"`
-	Port       int    `json:"port"`
-	Username   string `json:"username"`
-	PPKNumber  uint   `json:"ppk_number"`
-	Password   string `json:"password"`
-	LicenseKey []uint `json:"license_key"`
+	Server     string `mapstructure:"server"`
+	Port       int    `mapstructure:"port"`
+	Username   string `mapstructure:"username"`
+	PPKNumber  uint   `mapstructure:"ppk_number"`
+	Password   string `mapstructure:"password"`
+	LicenseKey []uint `mapstructure:"license_key"`
 }
 
 type Config struct {
-	AESPassword  string        `json:"aes_password"`
-	RSAPublicKey string        `json:"rsa_public_key"`
-	BotAPI       botAPIConfig  `json:"bot_api"`
-	Venbest      venbestConfig `json:"venbest"`
+	AESPassword  string        `mapstructure:"aes_password"`
+	RSAPublicKey string        `mapstructure:"rsa_public_key"`
+	BotAPI       botAPIConfig  `mapstructure:"bot_api"`
+	Venbest      venbestConfig `mapstructure:"venbest"`
 }
 
-func readConfig(path string, config *Config) error {
-	f, err := os.Open(path)
-	if err != nil {
-		return err
+var defaults = map[string]interface{}{
+	"aes_password":   "",
+	"rsa_public_key": "",
+
+	"bot_api.endpoint":   "",
+	"bot_api.token":      "",
+	"bot_api.recipients": "",
+
+	"venbest.server":      "",
+	"venbest.port":        0,
+	"venbest.username":    "",
+	"venbest.ppk_number":  0,
+	"venbest.password":    "",
+	"venbest.license_key": []uint{},
+}
+
+func readConfig(dst string, config *Config) error {
+	dir, basename := path.Split(dst)
+	name := strings.TrimSuffix(basename, path.Ext(basename))
+
+	v := viper.New()
+
+	v.AddConfigPath(dir)
+	v.SetConfigName(name)
+
+	v.SetEnvPrefix("app")
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	for key, value := range defaults {
+		v.SetDefault(key, value)
 	}
 
-	b, err := ioutil.ReadAll(f)
-	if err != nil {
-		return err
+	if err := v.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", v.ConfigFileUsed())
+	} else {
+		fmt.Println("Config file not found:", dst)
 	}
 
-	if err := json.Unmarshal(b, &config); err != nil {
+	if err := v.Unmarshal(&config); err != nil {
 		return err
 	}
 

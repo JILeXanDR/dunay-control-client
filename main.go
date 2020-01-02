@@ -7,16 +7,20 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"log"
-	"strings"
+	"os"
+	"path"
 	"time"
 )
 
 var config Config
 
 func main() {
-	if err := readConfig("config.json", &config); err != nil {
+	dir, _ := os.Getwd()
+	if err := readConfig(path.Join(dir, "config.json"), &config); err != nil {
 		log.Fatal(err)
 	}
+
+	log.Printf("%+v", config)
 
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: false})
@@ -99,36 +103,4 @@ func main() {
 	}()
 
 	log.Fatal(client.Start())
-}
-
-func privateConversations() []string {
-	return castToSliceOfStrings(filterByFunc(castToSliceOfInterfaces(config.BotAPI.Recipients), func(val interface{}) bool {
-		return strings.HasPrefix(val.(string), "8:")
-	}))
-}
-
-func filterByFunc(slice []interface{}, filterFunc func(val interface{}) bool) []interface{} {
-	var res []interface{}
-	for _, val := range slice {
-		if filterFunc(val) {
-			res = append(res, val)
-		}
-	}
-	return res
-}
-
-func castToSliceOfStrings(slice []interface{}) []string {
-	var res []string
-	for _, val := range slice {
-		res = append(res, val.(string))
-	}
-	return res
-}
-
-func castToSliceOfInterfaces(slice []string) []interface{} {
-	var res []interface{}
-	for _, val := range slice {
-		res = append(res, val)
-	}
-	return res
 }
