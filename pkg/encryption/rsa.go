@@ -6,7 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	"errors"
+	"github.com/pkg/errors"
 )
 
 type rsaEncryptionService struct {
@@ -22,7 +22,7 @@ func NewRSAEncryptionService(pubKey []byte) *rsaEncryptionService {
 func (s *rsaEncryptionService) Encode(text []byte) ([]byte, error) {
 	var block *pem.Block
 	if val, err := pem.Decode(s.pubKeyContent); len(err) != 0 {
-		return nil, errors.New(string(err))
+		return nil, errors.Wrap(errors.New(string(err)), "failed to decode RSA public key")
 	} else if val == nil {
 		return nil, errors.New("public key error")
 	} else {
@@ -31,12 +31,12 @@ func (s *rsaEncryptionService) Encode(text []byte) ([]byte, error) {
 
 	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to ParsePKIXPublicKey")
 	}
 
 	b1, err := rsa.EncryptPKCS1v15(rand.Reader, pubInterface.(*rsa.PublicKey), text)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to EncryptPKCS1v15")
 	}
 
 	return []byte(base64.StdEncoding.EncodeToString(b1)), nil

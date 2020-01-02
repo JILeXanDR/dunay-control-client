@@ -20,7 +20,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("%+v", config)
+	log.Printf("use conriguration: %+v", config)
 
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: false})

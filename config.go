@@ -35,7 +35,7 @@ var defaults = map[string]interface{}{
 
 	"bot_api.endpoint":   "",
 	"bot_api.token":      "",
-	"bot_api.recipients": "",
+	"bot_api.recipients": []string{},
 
 	"venbest.server":      "",
 	"venbest.port":        0,
