@@ -66,10 +66,10 @@ func readConfig(dst string, config *Config) error {
 		v.SetDefault(key, value)
 	}
 
-	if err := v.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", v.ConfigFileUsed())
-	} else {
+	if err := v.ReadInConfig(); err != nil {
 		fmt.Println("Config file not found:", dst)
+	} else {
+		fmt.Println("Using config file:", v.ConfigFileUsed())
 	}
 
 	if err := v.Unmarshal(&config); err != nil {
@@ -78,7 +78,7 @@ func readConfig(dst string, config *Config) error {
 
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
-		config.Port = uint(defaults["port"].(float64))
+		config.Port = uint(defaults["port"].(int))
 	} else {
 		config.Port = uint(port)
 	}
