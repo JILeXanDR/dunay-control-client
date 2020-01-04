@@ -109,8 +109,8 @@ func main() {
 		}
 	}()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello World!")
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "OK")
 	})
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.Port), nil))
 }
