@@ -139,7 +139,7 @@ func getOpenEmotion(t time.Time) string {
 }
 
 func getCloseEmotion(t time.Time) string {
-	if t.Hour() >= 0 && t.Minute() >= 0 {
+	if (t.Hour() >= 0 && t.Minute() >= 0) && t.Hour() < 18 {
 		return "(drunk)"
 	}
 	if t.Hour() >= 22 && t.Minute() >= 0 {
