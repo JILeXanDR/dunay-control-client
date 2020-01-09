@@ -84,9 +84,9 @@ func main() {
 
 				switch event.Code {
 				case venbest.EventCode64:
-					sendSkypeMessage(fmt.Sprintf("(ghost) Офис закрыт (%s)", formatTime(event.When)), config.BotAPI.Recipients)
+					sendSkypeMessage(fmt.Sprintf("Офіс зачинено %s (%s)", getCloseEmotion(event.When), formatTime(event.When)), config.BotAPI.Recipients)
 				case venbest.EventCode72:
-					sendSkypeMessage(fmt.Sprintf("(hi) Офис открыт (%s)", formatTime(event.When)), config.BotAPI.Recipients)
+					sendSkypeMessage(fmt.Sprintf("Офіс відчинено %s (%s)", getOpenEmotion(event.When), formatTime(event.When)), config.BotAPI.Recipients)
 				case venbest.EventCode108:
 					sendSkypeMessage(fmt.Sprintf("Открыта дверца ППК (%s)", formatTime(event.When)), privateConversations())
 				case venbest.EventCode109:

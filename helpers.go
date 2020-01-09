@@ -115,3 +115,44 @@ func privateConversations() []string {
 func formatTime(t time.Time) string {
 	return t.Format("15:04:05")
 }
+
+func getOpenEmotion(t time.Time) string {
+	if t.Hour() >= 9 && t.Minute() >= 0 {
+		return "(cool)"
+	}
+	if t.Hour() >= 8 && t.Minute() >= 30 {
+		return "(happy)"
+	}
+	if t.Hour() >= 8 && t.Minute() >= 0 {
+		return "(smileeyes)"
+	}
+	if t.Hour() >= 7 && t.Minute() >= 30 {
+		return "(llsshock)"
+	}
+	if t.Hour() >= 7 && t.Minute() >= 0 {
+		return "(llsshock)"
+	}
+	if t.Hour() >= 6 && t.Minute() >= 30 {
+		return "(xd)"
+	}
+	return "(hysterical)"
+}
+
+func getCloseEmotion(t time.Time) string {
+	if t.Hour() >= 0 && t.Minute() >= 0 {
+		return "(drunk)"
+	}
+	if t.Hour() >= 22 && t.Minute() >= 0 {
+		return "(sleepy)"
+	}
+	if t.Hour() >= 20 && t.Minute() >= 0 {
+		return "(waiting)"
+	}
+	if t.Hour() >= 19 && t.Minute() >= 0 {
+		return "(nerdy)"
+	}
+	if t.Hour() >= 18 && t.Minute() >= 0 {
+		return "(wasntme)"
+	}
+	return "(cool)"
+}
