@@ -84,19 +84,19 @@ func main() {
 
 				switch event.Code {
 				case venbest.EventCode64:
-					sendSkypeMessage(fmt.Sprintf("(ghost) Офис закрыт (%s)", event.When.Format(time.RFC1123)), config.BotAPI.Recipients)
+					sendSkypeMessage(fmt.Sprintf("(ghost) Офис закрыт (%s)", formatTime(event.When)), config.BotAPI.Recipients)
 				case venbest.EventCode72:
-					sendSkypeMessage(fmt.Sprintf("(hi) Офис открыт (%s)", event.When.Format(time.RFC1123)), config.BotAPI.Recipients)
+					sendSkypeMessage(fmt.Sprintf("(hi) Офис открыт (%s)", formatTime(event.When)), config.BotAPI.Recipients)
 				case venbest.EventCode108:
-					sendSkypeMessage(fmt.Sprintf("Открыта дверца ППК (%s)", event.When.Format(time.RFC1123)), privateConversations())
+					sendSkypeMessage(fmt.Sprintf("Открыта дверца ППК (%s)", formatTime(event.When)), privateConversations())
 				case venbest.EventCode109:
-					sendSkypeMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", event.When.Format(time.RFC1123)), privateConversations())
+					sendSkypeMessage(fmt.Sprintf("Закрыта дверца ППК (%s)", formatTime(event.When)), privateConversations())
 				default:
 					//send(fmt.Sprintf(`Незивестнное событие: "%+v"`, event))
 				}
 			case state := <-client.States:
 				logger.WithField("info", state).Debug("get state")
-				sendSkypeMessage(fmt.Sprintf("Текущее состояние ППК (%s):\n```\n%s\n```", state.When.Format(time.RFC1123), beautyJSON(state.PPKs)), privateConversations())
+				sendSkypeMessage(fmt.Sprintf("Текущее состояние ППК (%s):\n```\n%s\n```", formatTime(state.When), beautyJSON(state.PPKs)), privateConversations())
 			case err := <-client.Errors:
 				logger.WithError(err).Error("client returned unexpected error")
 			}

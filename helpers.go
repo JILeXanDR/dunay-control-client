@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func genKey(length int) []byte {
@@ -109,4 +110,8 @@ func privateConversations() []string {
 	return castToSliceOfStrings(filterByFunc(castToSliceOfInterfaces(config.BotAPI.Recipients), func(val interface{}) bool {
 		return strings.HasPrefix(val.(string), "8:")
 	}))
+}
+
+func formatTime(t time.Time) string {
+	return t.Format("15:04:05")
 }
