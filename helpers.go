@@ -118,24 +118,18 @@ func formatTime(t time.Time) string {
 
 func getOpenEmotion(t time.Time) string {
 	if t.Hour() >= 9 && t.Minute() >= 0 {
-		return "(cool)"
-	}
-	if t.Hour() >= 8 && t.Minute() >= 30 {
-		return "(happy)"
+		return "(snail) "
 	}
 	if t.Hour() >= 8 && t.Minute() >= 0 {
-		return "(smileeyes)"
-	}
-	if t.Hour() >= 7 && t.Minute() >= 30 {
-		return "(llsshock)"
+		return "(hedgehog)"
 	}
 	if t.Hour() >= 7 && t.Minute() >= 0 {
-		return "(llsshock)"
+		return "(hendance)"
 	}
-	if t.Hour() >= 6 && t.Minute() >= 30 {
-		return "(xd)"
+	if t.Hour() >= 6 && t.Minute() >= 0 {
+		return "(werewolfhowl)"
 	}
-	return "(hysterical)"
+	return "(monkey) "
 }
 
 func getCloseEmotion(t time.Time) string {
