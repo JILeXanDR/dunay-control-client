@@ -1,0 +1,5 @@
+.idea
+ionic/node_modules
+config.json
+nodejs/node_modules
+.env
