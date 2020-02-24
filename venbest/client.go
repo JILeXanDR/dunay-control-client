@@ -3,6 +3,7 @@ package venbest
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/JILeXanDR/dunay-control-client/encryption"
 	"net/url"
@@ -37,19 +38,20 @@ func generateKey(length int) []byte {
 }
 
 type Client struct {
-	ClientOptions
-	Events chan PPKEvent
-	States chan State
-	Errors chan ClientErr
-	key    []byte
-	ws     *ws
-	aes    *encryption.AESEncryptionService
-	rsa    *encryption.RSAEncryptionService
+	options ClientOptions
+	Events  chan PPKEvent
+	States  chan State
+	Errors  chan ClientErr
+	key     []byte
+	ws      *ws
+	aes     *encryption.AESEncryptionService
+	rsa     *encryption.RSAEncryptionService
+	logger  *logrus.Logger
 }
 
 func NewClient(options ClientOptions) *Client {
 	key := generateKey(16)
-	options.Logger.WithField("key", string(key)).Printf("generated AES key")
+	//options.Logger.WithField("key", string(key)).Printf("generated AES key")
 
 	return &Client{
 		options,
@@ -57,60 +59,62 @@ func NewClient(options ClientOptions) *Client {
 		make(chan State),
 		make(chan ClientErr),
 		key,
-		&ws{
+		newWS(
 			&url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%v", options.ServerHost, options.ServerPort)},
-			make(chan []byte),
-			nil,
-			options.Logger.WithField("service", "WS").Logger,
-		},
+			options.Logger.WithField("module", "WS").Logger,
+		),
 		encryption.NewAESEncryptionService(key),
 		encryption.NewRSAEncryptionService([]byte(options.RSAPublicKey)),
+		options.Logger,
 	}
 }
 
 func (client *Client) parseServerResponse(message []byte) (interface{}, error) {
+	// for errors
+	if json.Valid(message) {
+		var res JSON
+
+		err := json.Unmarshal(message, &res)
+
+		return res, err
+	}
+
+	plainJSON, err := client.aesDecodeMessage(message)
+	if err != nil {
+		return nil, err
+	}
+
+	client.logger.WithField("value", plainJSON).Printf("Plain JSON")
+
+	var res JSON
+	if err := json.Unmarshal(plainJSON, &res); err != nil {
+		return nil, err
+	}
+
 	if string(message) == "ping" || string(message) == "pong" {
 		return string(message), nil
 	}
 
-	var res JSON
-
-	if err := json.Unmarshal(message, &res); err == nil {
-		client.Logger.WithField("value", message).Printf("Plain JSON")
-	} else {
-		plainJSON, err := client.aesDecodeMessage(message)
-		if err != nil {
-			return nil, err
-		}
-
-		client.Logger.WithField("value", plainJSON).Printf("Plain JSON")
-
-		if err := json.Unmarshal(plainJSON, &res); err != nil {
-			return nil, err
-		}
-	}
-
-	client.Logger.WithField("value", res).Printf("JSON structure")
-
-	return res, nil
+	return nil, errors.New("unknown response")
 }
 
 func (client *Client) Start() error {
 	closeFunc, err := client.ws.connect()
 	if err != nil {
-		client.Logger.WithError(err).Error("can't connect to WS server")
+		client.logger.WithError(err).Error("can't connect to WS server")
 		return err
 	}
 	defer closeFunc()
 
 	encodedKey, err := client.rsa.Encode(client.key)
 	if err != nil {
-		client.Logger.WithError(err).Error("can't prepare key")
+		client.logger.WithError(err).Error("can't prepare key")
 		return err
 	}
 
+	client.logger.Debugf("send encoded public key")
 	if err := client.ws.send(encodedKey); err != nil {
-		client.Logger.WithError(err).Error("can't send key")
+		client.logger.WithError(err).Error("can't send key")
 		return err
 	}
 
@@ -119,6 +123,7 @@ func (client *Client) Start() error {
 	for {
 		select {
 		case message := <-client.ws.processMessage:
+			client.logger.Debugf("got message to process")
 			client.processSingleMessage(message)
 		}
 	}
@@ -128,7 +133,7 @@ func (client *Client) Start() error {
 func (client *Client) loginData() ([]byte, error) {
 	// TODO: пока код дальше не используется, данные юзера захардкожены
 	// FIXME: написать корректный AES encrypt
-	return client.HardCodedLoginData, nil
+	return client.options.HardCodedLoginData, nil
 }
 
 func (client *Client) encodeMessage(message []byte) ([]byte, error) {
@@ -145,8 +150,7 @@ func (client *Client) aesDecodeMessage(message []byte) ([]byte, error) {
 }
 
 func (client *Client) processSingleMessage(message []byte) {
-	logger := client.Logger.WithField("original_message", string(message))
-
+	logger := client.logger.WithField("original_message", string(message))
 	logger.Debug("start processing message...")
 
 	defer func() {
@@ -159,10 +163,11 @@ func (client *Client) processSingleMessage(message []byte) {
 		return
 	}
 
+	logger.WithField("parsed", res).Debug("parsed server response")
+
 	switch val := res.(type) {
 	case JSON:
-		logger := client.Logger.WithField("data", val)
-		logger.Debug("recognized message")
+		logger := client.logger.WithField("data", val)
 
 		switch val["type"].(string) {
 		case "error":
