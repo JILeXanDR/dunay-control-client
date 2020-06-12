@@ -121,11 +121,7 @@ func (client *Client) Start() error {
 	go client.ws.readMessages()
 
 	for {
-		select {
-		case message := <-client.ws.processMessage:
-			client.logger.Debugf("got message to process")
-			client.processSingleMessage(message)
-		}
+		client.processSingleMessage(<-client.ws.processMessage)
 	}
 }
 
@@ -150,11 +146,11 @@ func (client *Client) aesDecodeMessage(message []byte) ([]byte, error) {
 }
 
 func (client *Client) processSingleMessage(message []byte) {
-	logger := client.logger.WithField("original_message", string(message))
+	logger := client.logger.WithField("WS server message", string(message))
 	logger.Debug("start processing message...")
 
 	defer func() {
-		logger.Debug("processing message done.")
+		logger.Debug("message processing done.")
 	}()
 
 	res, err := client.parseServerResponse(message)

@@ -20,7 +20,7 @@ func newWS(addr *url.URL, logger *logrus.Logger) *ws {
 	return &ws{
 		addr:           addr,
 		processMessage: make(chan []byte),
-		logger:         logger.WithField("f", "v").Logger,
+		logger:         logger.WithField("module", "ws").Logger,
 	}
 }
 

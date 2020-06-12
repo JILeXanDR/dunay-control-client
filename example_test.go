@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/JILeXanDR/dunay-control-client/testdata"
+	"github.com/JILeXanDR/dunay-control-client/v0/testdata"
 	"github.com/JILeXanDR/dunay-control-client/venbest"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
@@ -16,10 +16,10 @@ func TestExample(t *testing.T) {
 	server := testdata.NewFakeServer()
 	defer server.Close()
 
-	fullURL, err := url.Parse(server.URL)
+	serverURL, err := url.Parse(server.URL)
 	require.NoError(t, err, "parse URL of fake server")
 
-	port, err := strconv.Atoi(fullURL.Port())
+	port, err := strconv.Atoi(serverURL.Port())
 	require.NoError(t, err, "convert string port to int")
 
 	f, err := os.Open("./testdata/rsa_key.pub")
@@ -32,7 +32,7 @@ func TestExample(t *testing.T) {
 	client := venbest.NewClient(venbest.ClientOptions{
 		HardCodedLoginData: []byte(``),
 		RSAPublicKey:       string(b),
-		ServerHost:         fullURL.Hostname(),
+		ServerHost:         serverURL.Hostname(),
 		ServerPort:         port,
 		Username:           "test",
 		PPKNum:             0,
@@ -41,7 +41,11 @@ func TestExample(t *testing.T) {
 		Logger:             logger,
 	})
 
-	go client.Start()
+	go func() {
+		if err := client.Start(); err != nil {
+			logger.WithError(err).Error("starting venbest client")
+		}
+	}()
 
 	println("tests...")
 
