@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/JILeXanDR/dunay-control-client/v0/testdata"
+	"github.com/JILeXanDR/dunay-control-client/testdata"
 	"github.com/JILeXanDR/dunay-control-client/venbest"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
